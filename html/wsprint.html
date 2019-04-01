@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="controls">
+    <div>
+        <form method="post" action="subscribe" name="subscribe">
+            <label>
+                Address:
+                <input type="text" name="address" value="0.0.0.0">
+            </label>
+            <label>
+                Port:
+                <input type="text" name="port" value="7331">
+            </label>
+            <br>
+            Sensors:
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody id="sensors">
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="2">
+                        <button type="button" onclick="addSensor([])">Add Sensor</button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            <button>subscribe</button>
+        </form>
+    </div>
+    <div>
+        <form method="post" action="simulate" name="simulate">
+            <label>
+                Address:
+                <input type="text" name="address" value="0.0.0.0">
+            </label>
+            <label>
+                Port:
+                <input type="text" name="port" value="7331">
+            </label>
+            <label>
+                <select>
+
+                </select>
+            </label>
+            <button>simulate</button>
+        </form>
+        <span id="simulation"></span>
+    </div>
+</div>
+<hr>
+<ul id="l"></ul>
+<script>
+    const sensors = document.getElementById('sensors');
+
+    function addSensor([name = '', type = '']) {
+        sensors.insertAdjacentHTML('beforeend',
+            '<tr>' +
+            '<td><label><input type="text" name="name" value="' + name + '"></label></td>' +
+            '<td><label><input type="text" name="type" value="' + type + '" minlength="1" maxlength="1"></label></td>' +
+            '</tr>'
+        );
+    }
+
+    [
+        ['ID', 'H'],
+        ['Number of channels', 'H'],
+        ['Sequence counter', 'I'],
+        ['Time 1 - default sample rate', 'd'],
+        ['Time 1 - slow sample rate', 'd'],
+        ['Time 1 - fast sample rate', 'd'],
+        ['Load [N]', 'd'],
+        ['Displacement [mm]', 'd'],
+        ['AccelerometerX', 'd'],
+        ['0 Degrees Transvers on Axle', 'd'],
+        ['Rosett +45 Degrees Along Axle', 'd'],
+        ['Rosett 90 Degrees Along Axle', 'd'],
+        ['Rosett -45 Degrees Along Axle', 'd'],
+        ['Radius +45 Degrees Along Axle', 'd'],
+        ['MX840A 0 hardware time default sample rate', 'd']
+    ].forEach(addSensor);
+
+    document.forms.namedItem('subscribe').addEventListener('submit', ajaxSubmit);
+    document.forms.namedItem('simulate').addEventListener('submit', ajaxSubmit);
+
+    function ajaxSubmit(event) {
+        const formData = new FormData(event.target);
+        const request = new XMLHttpRequest();
+        request.open("POST", event.target.action, true);
+        request.onload = function () {
+            event.target.insertAdjacentHTML('afterend', request.responseText);
+        };
+        request.send(formData);
+        event.preventDefault();
+    }
+
+    const l = document.getElementById('l');
+
+    let pingInterval = null;
+
+    reconnect();
+
+    function reconnect() {
+        try {
+            const ws = new WebSocket('ws://'+window.location.hostname+':'+window.location.port);
+            ws.binaryType = 'arraybuffer';
+
+            let messageRecentlyReceived = true;
+            ws.onopen = function () {
+                l.insertAdjacentHTML('afterbegin', '<br><strong>Connected</strong><br>');
+                if (pingInterval == null) {
+                    pingInterval = setInterval(function () {
+                        if (messageRecentlyReceived) {
+                            messageRecentlyReceived = false;
+                        } else {
+                            ws.send('__ping__');
+                        }
+                    }, 5000)
+                }
+            };
+            ws.onclose = function () {
+                reconnect()
+            };
+            ws.onmessage = function (event) {
+                messageRecentlyReceived = true;
+                if (event.data.byteLength > 0) {
+                    const data = new Float64Array(event.data);
+                    let newli = document.createElement('li');
+                    newli.innerText = data.toString(); //new Float32Array(event.data);
+                    l.insertAdjacentElement('afterbegin', newli);
+                } else {
+                    console.log('pong')
+                }
+            };
+        } catch (e) {
+            console.log(e);
+            setTimeout(reconnect, 5000)
+        }
+    }
+</script>
+<style>
+    #controls {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    input[name='name'] {
+        width: 20rem;
+    }
+
+    input[name='type'] {
+        width: 1rem;
+        text-align: center;
+    }
+</style>
+</body>
+</html>
