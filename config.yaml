@@ -1,3 +1,5 @@
 host: 0.0.0.0
 port: 1337
 secret_key: RJueaGk_wxvgOonaSHJebXi-uJcxqQP07bCkl9WgApQ=
+data_source_name: Driver=SQLite;Database=sqlite.db
+kafka_server: localhost:9092

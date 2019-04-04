@@ -22,7 +22,6 @@ async def simulation_start(request: web.Request):
     sim: Simulation = Simulation(asyncio.get_event_loop(), post['fmu'], retriever.byte_format)
     request.app['simulations'][simulation_id] = sim
     client = request.app['ws'][session_id]
-    sim.subscribers[session_id] = client
     retriever.subscribers[simulation_id] = sim
     sim.output_refs = [int(s) for s in post.getall('output_refs')]  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     input_refs = [int(s) for s in post.getall('input_refs')]

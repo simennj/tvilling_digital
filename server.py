@@ -9,6 +9,7 @@ from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from src import settings
 from src import views
 from src.connections import Simulation
+from src.clients import views as client_views
 from src.simulations import views as simulation_views
 from src.datasources import views as datasource_views
 
@@ -26,6 +27,7 @@ def init_app() -> web.Application:
     app.router.add_routes(views.routes)
     app.router.add_routes(simulation_views.routes)
     app.router.add_routes(datasource_views.routes)
+    app.router.add_routes(client_views.routes)
     app['clients'] = {}
     app['datasources'] = {}
     app['simulations']: Dict[str, Simulation] = {}
