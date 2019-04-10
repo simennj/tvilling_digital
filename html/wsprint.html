@@ -59,9 +59,34 @@
     </div>
 </div>
 <hr>
+<div id="chartContainer" style="width: 100%"></div>
 <ul id="l"></ul>
+<span id="i">0</span>
+<script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
 <script>
     const sensors = document.getElementById('sensors');
+
+    // Store reference to container for plot
+    var graphContainer = document.getElementById('chartContainer');
+
+    // Container for displacement plot data
+    var displacements = {x: [[]], y: [[]]};
+
+    // Initialise plot
+    Plotly.newPlot(
+        graphContainer,
+        [{y: [], x: []}],
+        {
+            title: 'Displacement',
+            yaxis: {
+                title: 'Displacement (m)'
+            },
+            xaxis: {
+                title: 'Timestamp'
+            }
+        },
+        {responsive: true}
+    );
 
     function addSensor([name = '', type = '']) {
         sensors.insertAdjacentHTML('beforeend',
@@ -106,13 +131,20 @@
 
     const l = document.getElementById('l');
 
+    const i = document.getElementById('i');
+
     let pingInterval = null;
 
     reconnect();
 
+    // const buffer_size = 1000;
+    // let buffer_position = 0;
+    // let x_buffer = new Float64Array(buffer_size), y_buffer = new Float64Array(buffer_size);
+    // x_buffer.fill(0)
+    // y_buffer.fill(0)
     function reconnect() {
         try {
-            const ws = new WebSocket('ws://'+window.location.hostname+':'+window.location.port);
+            const ws = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port);
             ws.binaryType = 'arraybuffer';
 
             let messageRecentlyReceived = true;
@@ -131,13 +163,35 @@
             ws.onclose = function () {
                 reconnect()
             };
+            // let counter = 0;
             ws.onmessage = function (event) {
                 messageRecentlyReceived = true;
                 if (event.data.byteLength > 0) {
                     const data = new Float64Array(event.data);
-                    let newli = document.createElement('li');
-                    newli.innerText = data.toString(); //new Float32Array(event.data);
-                    l.insertAdjacentElement('afterbegin', newli);
+
+                    // let x_buffer = []
+                    // let y_buffer = []
+
+                    for (let i = 0; i < data.length / 13; i += 13) {
+                        // x_buffer.push(data[i + 12]);
+                        // y_buffer.push(data[i + 5]);
+                        // buffer_position = ++buffer_position % buffer_size
+                        // displacements.x[0].push(new Date(
+                        //     (x_buffer.reduce((a, b) => a + b) / x_buffer.length) * 1000
+                        // ));
+                        // displacements.y[0].push(
+                        //     (y_buffer.reduce((a, b) => a + b) / y_buffer.length)
+                        // );
+                        // buffer_position = 0;
+                        Plotly.extendTraces(graphContainer, {y: [[data[i + 5]]], x: [[new Date(data[i + 12]*1000)]]}, [0], 1000);
+                    }
+                    // Plotly.extendTraces(graphContainer, {y: [y_buffer], x: [x_buffer]}, [0], 10000);
+                    // displacements.x[0] = x_buffer;
+                    // displacements.y[0] = y_buffer;
+                    // let newli = document.createElement('li');
+                    // newli.innerText = data.toString(); //new Float32Array(event.data);
+                    // l.insertAdjacentElement('afterbegin', newli);
+                    i.innerHTML = '<strong>' + ++counter + ":</strong><br>" + data;
                 } else {
                     console.log('pong')
                 }
@@ -147,12 +201,21 @@
             setTimeout(reconnect, 5000)
         }
     }
+
+    // window.requestAnimationFrame(asdf);
+    // function asdf() {
+    //     displacements.x[0] = Array.from(x_buffer);
+    //     displacements.y[0] = Array.from(y_buffer);
+    //     Plotly.restyle(graphContainer, displacements);
+    // window.requestAnimationFrame(asdf)
+    // }
 </script>
 <style>
     #controls {
         display: flex;
         justify-content: space-evenly;
     }
+
     input[name='name'] {
         width: 20rem;
     }

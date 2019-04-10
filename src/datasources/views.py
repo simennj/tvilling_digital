@@ -21,7 +21,6 @@ async def datasource_start(request: web.Request):
     if 'id' not in session or session['id'] not in request.app['clients']:
         raise web.HTTPForbidden()
     client = request.app['client'][session['id']]
-    datasource.subscribers[session['id']] = client
     return web.HTTPTemporaryRedirect(
         request.app.router['datasource'].url_for(id=addr)
     )
@@ -30,6 +29,22 @@ async def datasource_start(request: web.Request):
 @routes.get('/datasources/{id}', name='datasource_detail')
 async def datasource_detail(request: web.Request):
     return web.json_response(request.app['datasources'][request.match_info['id']].dict_repr())
+
+
+@routes.get('/datasources/{id}/subscribe', name='datasource_subscribe')
+async def datasource_subscribe(request: web.Request):
+    session: Session = await get_session(request)
+    if 'id' not in session or session['id'] not in request.app['clients']:
+        raise web.HTTPForbidden()
+    client = request.app['client'][session['id']]
+    datasource_id = request.app['datasources'][request.match_info['id']]
+    if datasource_id not in request.app['datasources']:
+        return web.json_response({
+            'status': 'failed',
+            'message': f'There is no running datasource with id {datasource_id}'
+        })
+    request.app['subscribers'][datasource_id].add(client)
+    return web.json_response(datasource_id)
 
 
 @routes.post('/datasources/{id}/stop', name='datasource_stop')

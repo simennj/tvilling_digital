@@ -1,4 +1,5 @@
 import operator
+import os
 import re
 import shutil
 from collections import defaultdict
@@ -76,15 +77,16 @@ class ModelVariables:
 
     def dict_repr(self):
         return {
-            'input_variables': self.input_variables,
-            'scalar_output_variables': self.scalar_output_variables,
-            'matrix_output_variables': self.matrix_output_variables,
+            'input_variables': {n: str(v) for n, v in self.input_variables.items()},
+            'scalar_output_variables': {n: str(v) for n, v in self.scalar_output_variables.items()},
+            'matrix_output_variables': {n: str(v) for n, v in self.matrix_output_variables.items()},
         }
 
 
 class Twin:
     def __init__(self, file: str):
         self.file = file
+        print(os.getcwd())
         self.model_description = read_model_description(file)
         self.variables = ModelVariables(self.model_description)
         self.unzipped_directory = extract(file)

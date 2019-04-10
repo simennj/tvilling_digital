@@ -52,10 +52,7 @@ async def subscribe(request: web.Request):
     if 'id' not in session or session['id'] not in request.app['clients']:
         raise web.HTTPForbidden()
     client: Client = request.app['clients'][session['id']]
-    if not client.running:
-        client.start([f'{addr[0]}_{addr[1]}'])
-    else:
-        await client.add_subscription(f'{addr[0]}_{addr[1]}')
+    request.app['subscribers'][f'{addr[0]}_{addr[1]}'].add(client)
     return web.json_response({'host': addr[0], 'port': addr[1]})
 
 

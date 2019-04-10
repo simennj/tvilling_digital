@@ -10,7 +10,7 @@ routes = web.RouteTableDef()
 
 @routes.get('/simulations/', name='simulation_list')
 async def simulation_list(request: web.Request):
-    return web.json_response(request.app['simulations'])
+    return web.json_response({id: s.dict_repr() for id, s in request.app['simulations'].items()})
 
 
 @routes.post('/simulations/create', name='simulation_create')

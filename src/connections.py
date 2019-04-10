@@ -6,8 +6,10 @@ import traceback
 from abc import ABC, abstractmethod
 from array import array
 from asyncio import AbstractEventLoop, transports
-from typing import Tuple, List, Optional, Dict, Set
+from concurrent.futures import ProcessPoolExecutor
+from typing import Tuple, List, Optional, Set
 
+import aiohttp
 import aiokafka
 from aiohttp import web
 
@@ -15,79 +17,21 @@ from src import simulation, settings
 
 
 class Consumer(ABC):
-    def __init__(self, loop: asyncio.AbstractEventLoop, frequency_ms=1000 / 60):
+    def __init__(self, loop: asyncio.AbstractEventLoop):
         self.loop = loop
-        self.frequency_ms = frequency_ms
-        self.consumer: aiokafka.AIOKafkaConsumer = None
-        self.task: asyncio.Task = None
-        self._topics = set()
-
-    @property
-    def running(self):
-        return self.consumer is not None
-
-    def start(self, topics=()):
-        for topic in topics:
-            self._topics.add(topic)
-        self.task = self.loop.create_task(self._start())
-
-    async def _create_consumer(self) -> aiokafka.AIOKafkaConsumer:
-        return aiokafka.AIOKafkaConsumer(
-            loop=self.loop, bootstrap_servers=settings.KAFKA_SERVER
-        )
-
-    async def _start(self):
-        if not self.running and len(self._topics) > 0:
-            self.consumer = await self._create_consumer()
-            await self.consumer.start()
-            await self.consume()
-
-    async def consume(self):
-        try:
-            while self.running and len(self._topics) > 0:
-                messages: Dict[aiokafka.TopicPartition, List[aiokafka.ConsumerRecord]] = await self.consumer.getmany()
-                for topic, topic_messages in messages.items():
-                    await self._receive(topic_messages)
-                await asyncio.sleep(.1)
-        except Exception as e:
-            print('Stopping')
-            print(traceback.print_exc())
-            print(e)
-        finally:
-            print('Done running')
-            await self.consumer.stop()
-            self.consumer = None
-
-    async def stop(self, timeout=5):
-        try:
-            if self.task is not None:
-                await asyncio.wait_for(self.task, timeout=timeout)
-            self.task = None
-            assert(self.consumer is None, 'Consumer was not properly closed')
-        except TimeoutError as e:
-            print(e)  # TODO: Logging
-
-    async def add_subscription(self, topic):
-        self._topics.add(topic)
-        self.consumer.subscribe(list(self._topics))
-
-    async def remove_subscription(self, topic):
-        self._topics.discard(topic)
-        self.consumer.subscribe(list(self._topics))
-
-    def get_subscriptions(self):
-        return self._topics.copy()
 
     @abstractmethod
     async def _receive(self, messages: List[aiokafka.ConsumerRecord]):
         pass
 
-    def dict_repr(self):
-        return {
-            'frequency': self.frequency_ms,
-            'running': self.running,
-            'subscriptions': list(self.get_subscriptions())
-        }
+
+def run(producer, topic, frequency_ms=1000/60):
+    loop = asyncio.new_event_loop()
+    try:
+        asyncio.set_event_loop(loop=loop)
+        return loop.run_until_complete(producer(loop, topic, frequency_ms))
+    finally:
+        loop.close()
 
 
 class Producer:
@@ -99,7 +43,8 @@ class Producer:
         )
         self.topic = topic
         self.running = True
-        self.task = loop.create_task(self._flush_measurements())
+        # executor = ProcessPoolExecutor()
+        self.task = loop.run_in_executor(executor=None, func=self.run)
         self.frequency = datetime.timedelta(milliseconds=frequency_ms)
         self.buffer = b''
 
@@ -242,12 +187,9 @@ class Client(Consumer):
 
     async def remove_websocket_connection(self, ws: web.WebSocketResponse):
         self._websocket_connections.remove(ws)
-        if len(self._websocket_connections) is 0:
-            await self.stop()
 
     def dict_repr(self):
         return {
-            **super().dict_repr(),
             'connections': len(self._websocket_connections)
         }
 

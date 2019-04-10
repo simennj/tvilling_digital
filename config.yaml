@@ -3,3 +3,5 @@ port: 1337
 secret_key: RJueaGk_wxvgOonaSHJebXi-uJcxqQP07bCkl9WgApQ=
 data_source_name: Driver=SQLite;Database=sqlite.db
 kafka_server: localhost:9092
+udp_host: 0.0.0.0
+udp_port: 7331
