@@ -6,12 +6,10 @@ import traceback
 from abc import ABC, abstractmethod
 from array import array
 from asyncio import AbstractEventLoop, transports
-from concurrent.futures import ProcessPoolExecutor
 from typing import Tuple, List, Optional, Set
 
-import aiohttp
 import aiokafka
-from aiohttp import web
+from aiohttp import web, WSCloseCode
 
 from src import simulation, settings
 
@@ -25,7 +23,7 @@ class Consumer(ABC):
         pass
 
 
-def run(producer, topic, frequency_ms=1000/60):
+def run(producer, topic, frequency_ms=1000 / 60):
     loop = asyncio.new_event_loop()
     try:
         asyncio.set_event_loop(loop=loop)
@@ -187,6 +185,10 @@ class Client(Consumer):
 
     async def remove_websocket_connection(self, ws: web.WebSocketResponse):
         self._websocket_connections.remove(ws)
+
+    async def close(self):
+        for ws in self._websocket_connections:
+            await ws.close(code=WSCloseCode.GOING_AWAY, message=b'Shutdown')
 
     def dict_repr(self):
         return {

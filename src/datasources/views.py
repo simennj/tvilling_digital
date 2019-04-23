@@ -21,6 +21,7 @@ async def datasource_start(request: web.Request):
     if 'id' not in session or session['id'] not in request.app['clients']:
         raise web.HTTPForbidden()
     client = request.app['client'][session['id']]
+    # request.app['subscribers'][f'{addr[0]}_{addr[1]}'].add(client)
     return web.HTTPTemporaryRedirect(
         request.app.router['datasource'].url_for(id=addr)
     )

@@ -2,3 +2,4 @@
 venv/
 *.fmu
 *.zip
+simulation_files/

@@ -1,4 +1,3 @@
-PyYAML
 fmpy
 aiohttp
 aiohttp_session[secure]

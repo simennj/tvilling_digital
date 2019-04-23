@@ -77,9 +77,9 @@ class ModelVariables:
 
     def dict_repr(self):
         return {
-            'input_variables': {n: str(v) for n, v in self.input_variables.items()},
-            'scalar_output_variables': {n: str(v) for n, v in self.scalar_output_variables.items()},
-            'matrix_output_variables': {n: str(v) for n, v in self.matrix_output_variables.items()},
+            'input_variables': {n: v.__dict__ for n, v in self.input_variables.items()},
+            'scalar_output_variables': {n: v.__dict__ for n, v in self.scalar_output_variables.items()},
+            'matrix_output_variables': {n: [v.__dict__ for v in l] for n, l in self.matrix_output_variables.items()},
         }
 
 
