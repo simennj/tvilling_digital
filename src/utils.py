@@ -1,8 +1,10 @@
 import functools
 import json
 import os
+from typing import Any
 
-from aiohttp import web
+from aiohttp import web, hdrs
+from aiohttp.web_routedef import _Deco, _HandlerType, RouteDef
 
 
 def make_serializable(o):
@@ -23,3 +25,21 @@ async def find_in_dir(filename, parent_directory=''):
     else:
         raise web.HTTPNotFound()
     return path
+
+
+class RouteTableDefDocs(web.RouteTableDef):
+
+    @staticmethod
+    def get_docs_response(handler):
+        async def asdf(request: web.Request):
+            return web.Response(text=handler.__doc__ or "The given route has no docs.")
+
+        return asdf
+
+    def route(self, method: str, path: str, **kwargs: Any) -> _Deco:
+        def inner(handler: _HandlerType) -> _HandlerType:
+            self._items.append(RouteDef(method, path, handler, kwargs))
+            self._items.append(RouteDef(hdrs.METH_GET, '/docs' + path, self.get_docs_response(handler), {}))
+            return handler
+
+        return inner

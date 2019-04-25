@@ -2,16 +2,26 @@ import asyncio
 import traceback
 
 from aiohttp import web, WSMessage
-from aiohttp_session import get_session, Session
+from aiohttp_session import get_session
 
-from src.connections import Client, Datasource, Simulation, \
-    get_or_create_retriever
+from src.connections import Client
+from src.utils import RouteTableDefDocs
 
-routes = web.RouteTableDef()
+routes = RouteTableDefDocs()
 
 
 @routes.get('/')
 async def test(request: web.Request):
+    """
+    A standard HTTP request will return a sample page with a simple example of api use.
+    A WebSocket request will initiate a websocket connection making it possible to retrieve measurement and simulation data.
+
+    Available endpoints are
+    - /simulations/ for running simulations
+    - /datasources/ for measurement data sources
+    - /client/ for client information
+    - /fmus/ for FMUs available for simulation
+    """
     session = await get_session(request)
     ws = web.WebSocketResponse()  # TODO: fix heartbeat clientside?
     session['id'] = client_id = request.remote  # TODO: better id
