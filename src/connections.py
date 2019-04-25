@@ -11,7 +11,7 @@ from typing import Tuple, List, Optional, Set
 import aiokafka
 from aiohttp import web, WSCloseCode
 
-from src import simulation, settings
+from src import simulation
 
 
 class Consumer(ABC):
@@ -34,10 +34,10 @@ def run(producer, topic, frequency_ms=1000 / 60):
 
 class Producer:
 
-    def __init__(self, loop: AbstractEventLoop, topic, frequency_ms=1000 / 60):
+    def __init__(self, loop: AbstractEventLoop, topic, bootstrap_servers, frequency_ms=1000 / 60):
         self.loop = loop
         self.producer = aiokafka.AIOKafkaProducer(
-            loop=self.loop, bootstrap_servers=settings.KAFKA_SERVER
+            loop=self.loop, bootstrap_servers=bootstrap_servers
         )
         self.topic = topic
         self.running = True
@@ -83,8 +83,8 @@ class Producer:
 
 class Datasource(asyncio.DatagramProtocol, Producer):
 
-    def __init__(self, loop: AbstractEventLoop, data_structure, topic, frequency_ms=1000 / 60):
-        super().__init__(loop=loop, topic=topic, frequency_ms=frequency_ms)
+    def __init__(self, loop: AbstractEventLoop, data_structure, topic, bootstrap_servers, frequency_ms=1000 / 60):
+        super().__init__(loop=loop, topic=topic, bootstrap_servers=bootstrap_servers, frequency_ms=frequency_ms)
         self.byte_format = '<'
         self.data_names = []
         for name, data_type in data_structure:
@@ -196,12 +196,13 @@ class Client(Consumer):
         }
 
 
-async def setup_measurement_retriever(loop: AbstractEventLoop, addr, data_structure):
+async def setup_measurement_retriever(loop: AbstractEventLoop, addr, data_structure, bootstrap_servers):
     return await loop.create_datagram_endpoint(
         protocol_factory=lambda: Datasource(
             loop=loop,
             data_structure=data_structure,
-            topic=f'{addr[0]}_{addr[1]}'
+            topic=f'{addr[0]}_{addr[1]}',
+            bootstrap_servers=bootstrap_servers
         ),
         local_addr=addr
     )
@@ -209,14 +210,17 @@ async def setup_measurement_retriever(loop: AbstractEventLoop, addr, data_struct
 
 async def get_or_create_retriever(request: web.Request):
     post = await request.post()
-    addr = (post['address'], int(post['port']))
+    addr = (
+        post['address'], int(post['port'])
+    )  # TODO: use same address for all retrievers, possibly with different ports?
     names = post.getall('name', [])
     types = post.getall('type', [])
     if addr not in request.app['datasources']:
         request.app['datasources'][addr] = await setup_measurement_retriever(
             loop=asyncio.get_event_loop(),
             addr=addr,
-            data_structure=((names[i], types[i]) for i in range(len(names)))
+            data_structure=((names[i], types[i]) for i in range(len(names))),
+            bootstrap_servers=request.app['settings'].KAFKA_SERVER
         )
     datasource: Datasource = request.app['datasources'][addr][1]
     return addr, datasource

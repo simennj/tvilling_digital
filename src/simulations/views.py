@@ -5,7 +5,6 @@ from aiohttp import web
 from aiohttp_session import get_session
 
 from src.connections import Simulation, get_or_create_retriever
-from src.settings import SIMULATION_DIR
 from src.utils import find_in_dir, RouteTableDefDocs
 
 routes = RouteTableDefDocs()
@@ -64,7 +63,7 @@ async def simulation_detail(request: web.Request):
 @routes.get('/simulations/{id}/res', name='simulation_res')
 async def simulation_res(request: web.Request):
     """Get the result file from the simulation."""
-    sim_dir = await find_in_dir(request.match_info['id'], SIMULATION_DIR)
+    sim_dir = await find_in_dir(request.match_info['id'], request.app['settings'].SIMULATION_DIR)
     return web.FileResponse(os.path.join(sim_dir, 'resources', 'model', 'fedem_solver.res'))
 
 
@@ -74,7 +73,7 @@ async def simulation_models(request: web.Request):
     List the models in the given simulation.
     Append the model name to download the model file.
     """
-    sim_dir = await find_in_dir(request.match_info['id'], SIMULATION_DIR)
+    sim_dir = await find_in_dir(request.match_info['id'], request.app['settings'].SIMULATION_DIR)
     model_dir = os.path.join(sim_dir, 'resources', 'link_DB')
     files = next(os.walk(model_dir))[2]
     return web.json_response(files)
@@ -83,7 +82,7 @@ async def simulation_models(request: web.Request):
 @routes.get('/simulations/{id}/models/{model}', name='simulation_model_file')
 async def simulation_model_file(request: web.Request):
     """Download the given model file."""
-    sim_dir = await find_in_dir(request.match_info['id'], SIMULATION_DIR)
+    sim_dir = await find_in_dir(request.match_info['id'], request.app['settings'].SIMULATION_DIR)
     model_dir = os.path.join(sim_dir, 'resources', 'link_DB')
     model_file = await find_in_dir(request.match_info['model'], model_dir)
     return web.FileResponse(model_file)

@@ -9,7 +9,7 @@ from aiohttp.web_runner import GracefulExit
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from watchdog.events import FileSystemEventHandler
 
-import src.settings, src.views
+import settings, src.views
 
 import importlib
 
@@ -17,13 +17,13 @@ from watchdog.observers import Observer
 
 log = logging.getLogger(__name__)
 
-HOST = src.settings.HOST
-PORT = src.settings.PORT
+HOST = settings.HOST
+PORT = settings.PORT
 
 
 def init_app() -> web.Application:
     app = web.Application()
-    aiohttp_session.setup(app, EncryptedCookieStorage(src.settings.SECRET_KEY))
+    aiohttp_session.setup(app, EncryptedCookieStorage(settings.SECRET_KEY))
     app.router.add_routes(src.views.routes)
     app['ws'] = []
     return app

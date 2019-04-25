@@ -6,8 +6,10 @@ from time import sleep
 from fmpy import read_model_description, extract
 from fmpy.fmi2 import FMU2Slave
 
+import settings
 
-def a(model, unzipdir, datasource: str, byte_format: str, id: str):
+
+def a(model, datasource: str, byte_format: str, id: str):
     print(model)
     print(datasource)
     print(byte_format)
@@ -20,7 +22,7 @@ def a(model, unzipdir, datasource: str, byte_format: str, id: str):
     dt = .1
 
     model_description = read_model_description(model)
-    dir = os.path.join('simulation_files', id)
+    dir = os.path.join(settings.SIMULATION_DIR, id)
     try:
         os.mkdir(dir)
         fmu = FMU2Slave(
@@ -46,8 +48,7 @@ def a(model, unzipdir, datasource: str, byte_format: str, id: str):
 
 if __name__ == '__main__':
     p = multiprocessing.Process(target=a, kwargs=dict(
-        model=os.path.abspath('fmu_files/testrig.fmu'),
-        unzipdir=os.path.abspath('simulation_files'),
+        model=os.path.abspath(os.path.join(settings.FMU_DIR, 'testrig.fmu')),
         datasource='127.0.0.1_7331',
         byte_format='',
         id='asdf'
