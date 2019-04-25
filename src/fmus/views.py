@@ -10,10 +10,11 @@ routes = RouteTableDefDocs()
 
 @routes.get('/fmus/', name='fmu_list')
 async def fmu_list(request: web.Request):
-    """
-    List all uploaded FMUs.
+    """List all uploaded FMUs.
+
     Append an FMU id to get more information about a listed FMU.
     """
+
     return web.json_response(os.listdir(request.app['settings'].FMU_DIR))
 
 

@@ -12,18 +12,19 @@ routes = RouteTableDefDocs()
 
 @routes.get('/simulations/', name='simulation_list')
 async def simulation_list(request: web.Request):
-    """
-    List all simulations.
+    """List all simulations.
+
     Append an id to get more information about a listed simulation.
     Append /create to create a new simulation.
     """
+
     return web.json_response({id: s.dict_repr() for id, s in request.app['simulations'].items()})
 
 
 @routes.post('/simulations/create', name='simulation_create')
 async def simulation_start(request: web.Request):
-    """
-    Create a new simulation from post request.
+    """Create a new simulation from post request.
+
     Post params:
     - id: id of created simulation
     - datasource: id of datasource to use as input to simulation
@@ -33,6 +34,7 @@ async def simulation_start(request: web.Request):
       Must be in the same order as input_refs.
     returns redirect to created simulation page
     """
+
     post = await request.post()
     _, retriever = await get_or_create_retriever(request)  # TODO: Get a datasource from "datasource" instead
     session_id = (await get_session(request))['id']
@@ -51,12 +53,13 @@ async def simulation_start(request: web.Request):
 
 @routes.get('/simulations/{id}', name='simulation_detail')
 async def simulation_detail(request: web.Request):
-    """
-    Information about the simulation with the given id.
+    """Information about the simulation with the given id.
+
     To get the simulations result file append /res
     To get the simulations models append /models/
     To stop the simulation append /stop
     """
+
     return web.json_response(request.app['simulations'][request.match_info['id']].dict_repr())
 
 
@@ -69,10 +72,11 @@ async def simulation_res(request: web.Request):
 
 @routes.get('/simulations/{id}/models', name='simulation_models')
 async def simulation_models(request: web.Request):
-    """
-    List the models in the given simulation.
+    """List the models in the given simulation.
+
     Append the model name to download the model file.
     """
+
     sim_dir = await find_in_dir(request.match_info['id'], request.app['settings'].SIMULATION_DIR)
     model_dir = os.path.join(sim_dir, 'resources', 'link_DB')
     files = next(os.walk(model_dir))[2]
