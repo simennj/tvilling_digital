@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from cryptography.fernet import Fernet
 
@@ -19,3 +20,6 @@ DATASOURCE_DIR = 'files/datasource'
 
 #  Will generate a new key on each run, could use a pregenerated key instead of Fernet.generate_key()
 SECRET_KEY = base64.urlsafe_b64decode(Fernet.generate_key())
+
+LOG_FILE = ''  # Will print log to stderr if no file is specified  TODO: will most likely be problems with writing to files from processes
+LOG_LEVEL = logging.INFO

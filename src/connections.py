@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import json
+import logging
 import struct
 import traceback
 from abc import ABC, abstractmethod
@@ -12,6 +13,8 @@ import aiokafka
 from aiohttp import web, WSCloseCode
 
 from src import simulation
+
+logger = logging.getLogger(__name__)
 
 
 class Consumer(ABC):
@@ -55,18 +58,18 @@ class Producer:
                     try:
                         await self.producer.send(topic=self.topic, value=data)
                     except:
-                        print(traceback.format_exc())
+                        logger.exception('Error while flushing to topic %s', self.topic)
                 await asyncio.sleep(
                     (next_flush_time - datetime.datetime.now()).total_seconds()
                 )
                 next_flush_time += self.frequency
             except TypeError:
-                print(traceback.format_exc())
+                logger.exception('Error while flushing to topic %s', self.topic)
                 next_flush_time = datetime.datetime.now() + self.frequency  # TODO: remove this ugly hack
             except struct.error:
-                print(traceback.format_exc())  # TODO: replace when logging is set up
+                logger.exception('Error while flushing to topic %s', self.topic)
             except:
-                print(traceback.format_exc())  # TODO: replace when logging is set up
+                logger.exception('Error while flushing to topic %s', self.topic)
 
     def flush(self):
         buffercontent = self.buffer
@@ -78,7 +81,7 @@ class Producer:
         try:
             asyncio.wait_for(self.task, timeout=timeout)
         except TimeoutError as e:
-            print(e)  # TODO: Logging
+            logger.exception('Error when stopping producer to topic %', self.topic)
 
 
 class Datasource(asyncio.DatagramProtocol, Producer):
@@ -99,7 +102,7 @@ class Datasource(asyncio.DatagramProtocol, Producer):
         self.loop.run_until_complete(self.producer.stop())
 
     def error_received(self, exc: Exception) -> None:
-        print('error in datasource: %s', exc)
+        logger.exception('Error in datasource')
 
     def datagram_received(self, data: bytes, addr: Tuple[str, int]) -> None:
         self.buffer += data

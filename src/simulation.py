@@ -1,3 +1,4 @@
+import logging
 import operator
 import os
 import re
@@ -8,6 +9,8 @@ from typing import List, Dict, Tuple
 from fmpy import read_model_description, extract
 from fmpy.fmi2 import FMU2Slave
 from fmpy.model_description import ModelDescription
+
+logger = logging.getLogger(__name__)
 
 
 class ModelVariables:
@@ -86,7 +89,7 @@ class ModelVariables:
 class Twin:
     def __init__(self, file: str):
         self.file = file
-        print(os.getcwd())
+        logger.info('Opening twin %s in %s', self.file, os.getcwd())
         self.model_description = read_model_description(file)
         self.variables = ModelVariables(self.model_description)
         self.unzipped_directory = extract(file)

@@ -2,7 +2,9 @@ import asyncio
 
 import aiokafka
 import typing
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Datasource(asyncio.DatagramProtocol):
 
@@ -28,7 +30,7 @@ class Datasource(asyncio.DatagramProtocol):
         self.loop.run_until_complete(self.producer.stop())
 
     def error_received(self, exc: Exception) -> None:
-        print('error in datasource: %s', exc)
+        logger.exception('error in datasource: %s', exc)
 
     def datagram_received(self, data: bytes, addr: typing.Tuple[str, int]) -> None:
         if addr in self.sources:

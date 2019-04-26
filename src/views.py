@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import traceback
 
 from aiohttp import web, WSMessage
@@ -8,6 +9,8 @@ from src.connections import Client
 from src.utils import RouteTableDefDocs
 
 routes = RouteTableDefDocs()
+
+logger = logging.getLogger(__name__)
 
 
 @routes.get('/')
@@ -30,10 +33,10 @@ async def test(request: web.Request):
     if ws.can_prepare(request):
         await ws.prepare(request)
         if client_id not in request.app['clients']:
-            print(f'New connection from {request.remote}')
+            logger.info('New connection from %s', request.remote)
             request.app['clients'][client_id] = Client(asyncio.get_event_loop())
         else:
-            print(f'Reconnection from {request.remote}')
+            logger.info('Reconnection from %s', request.remote)
         client = request.app['clients'][client_id]
         await client.add_websocket_connection(ws)
         try:
@@ -41,14 +44,13 @@ async def test(request: web.Request):
                 try:
                     if message.data == '__ping__':
                         await ws.send_bytes(b'')
-                    else:
-                        print(message.json())
+                    # else:
+                    #     print(message.json())
                 except AttributeError as e:
-                    traceback.print_exc()
-                    print(e)
+                    logger.exception('Error receiving message from %s', client_id)
             return ws
         finally:
-            print(f'Closing {request.remote}')
+            logger.info('Closing %s', request.remote)
             await client.remove_websocket_connection(ws)
             await ws.close()
     else:
