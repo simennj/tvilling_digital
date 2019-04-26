@@ -59,7 +59,7 @@ def init_app(settings) -> web.Application:
     app.router.add_routes(fmu_views.routes)
 
     cors = aiohttp_cors.setup(app, defaults={
-        'localhost': aiohttp_cors.ResourceOptions(
+        '*': aiohttp_cors.ResourceOptions(
             allow_credentials=True,
             expose_headers='*',
             allow_headers='*',

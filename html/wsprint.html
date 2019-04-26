@@ -64,6 +64,11 @@
 <span id="i">0</span>
 <script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
 <script>
+
+    fetch('http://localhost:1337/fmus/testrig.fmu/vars').then(response =>
+        console.log(response.json().then(console.log))
+    );
+
     const sensors = document.getElementById('sensors');
 
     // Store reference to container for plot
