@@ -8,6 +8,8 @@ from aiohttp.web_routedef import _Deco, _HandlerType, RouteDef
 
 
 def make_serializable(o):
+    # if hasattr(o, 'asdict'):
+    #     return o.asdict()
     # if hasattr(o, 'dict_repr'):
     #     return o.dict_repr()
     if hasattr(o, '__dict__'):
@@ -43,3 +45,10 @@ class RouteTableDefDocs(web.RouteTableDef):
             return handler
 
         return inner
+
+
+def try_get(post, key):
+    try:
+        return post[key]
+    except KeyError:
+        raise web.HTTPUnprocessableEntity(reason=f'Attempted to get {key} from request and failed')

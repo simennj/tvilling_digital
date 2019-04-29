@@ -45,7 +45,7 @@ class Producer:
         self.topic = topic
         self.running = True
         # executor = ProcessPoolExecutor()
-        self.task = loop.run_in_executor(executor=None, func=self.run)
+        self.task = loop.run_in_executor(executor=None, func=self._flush_measurements)
         self.frequency = datetime.timedelta(milliseconds=frequency_ms)
         self.buffer = b''
 
@@ -82,37 +82,6 @@ class Producer:
             asyncio.wait_for(self.task, timeout=timeout)
         except TimeoutError as e:
             logger.exception('Error when stopping producer to topic %', self.topic)
-
-
-class Datasource(asyncio.DatagramProtocol, Producer):
-
-    def __init__(self, loop: AbstractEventLoop, data_structure, topic, bootstrap_servers, frequency_ms=1000 / 60):
-        super().__init__(loop=loop, topic=topic, bootstrap_servers=bootstrap_servers, frequency_ms=frequency_ms)
-        self.byte_format = '<'
-        self.data_names = []
-        for name, data_type in data_structure:
-            self.data_names.append(name)
-            self.byte_format += data_type
-        assert (len(self.byte_format) == len(self.data_names) + 1)
-
-    def connection_made(self, transport: transports.BaseTransport) -> None:
-        self.loop.create_task(self.producer.start())
-
-    def connection_lost(self, exc: Optional[Exception]) -> None:
-        self.loop.run_until_complete(self.producer.stop())
-
-    def error_received(self, exc: Exception) -> None:
-        logger.exception('Error in datasource')
-
-    def datagram_received(self, data: bytes, addr: Tuple[str, int]) -> None:
-        self.buffer += data
-
-    def dict_repr(self):
-        return {
-            'frequency': self.frequency.total_seconds(),
-            'byte_format': self.byte_format,
-            'data_names': self.data_names,
-        }
 
 
 class Simulation(Consumer, Producer):
@@ -199,31 +168,4 @@ class Client(Consumer):
         }
 
 
-async def setup_measurement_retriever(loop: AbstractEventLoop, addr, data_structure, bootstrap_servers):
-    return await loop.create_datagram_endpoint(
-        protocol_factory=lambda: Datasource(
-            loop=loop,
-            data_structure=data_structure,
-            topic=f'{addr[0]}_{addr[1]}',
-            bootstrap_servers=bootstrap_servers
-        ),
-        local_addr=addr
-    )
 
-
-async def get_or_create_retriever(request: web.Request):
-    post = await request.post()
-    addr = (
-        post['address'], int(post['port'])
-    )  # TODO: use same address for all retrievers, possibly with different ports?
-    names = post.getall('name', [])
-    types = post.getall('type', [])
-    if addr not in request.app['datasources']:
-        request.app['datasources'][addr] = await setup_measurement_retriever(
-            loop=asyncio.get_event_loop(),
-            addr=addr,
-            data_structure=((names[i], types[i]) for i in range(len(names))),
-            bootstrap_servers=request.app['settings'].KAFKA_SERVER
-        )
-    datasource: Datasource = request.app['datasources'][addr][1]
-    return addr, datasource

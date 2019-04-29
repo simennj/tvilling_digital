@@ -4,8 +4,8 @@ import os
 from aiohttp import web
 from aiohttp_session import get_session
 
-from src.connections import Simulation, get_or_create_retriever
-from src.utils import find_in_dir, RouteTableDefDocs
+from src.connections import Simulation
+from src.utils import find_in_dir, RouteTableDefDocs, try_get
 
 routes = RouteTableDefDocs()
 
@@ -36,19 +36,18 @@ async def simulation_start(request: web.Request):
     """
 
     post = await request.post()
-    _, retriever = await get_or_create_retriever(request)  # TODO: Get a datasource from "datasource" instead
+    datasource_id = try_get(post, 'datasource')
+    datasource = request.app['datasources'].get_source(datasource_id)
     session_id = (await get_session(request))['id']
-    simulation_id = post['id']  # TODO: Generate id instead?
-    sim: Simulation = Simulation(asyncio.get_event_loop(), post['fmu'], retriever.byte_format)
+    simulation_id = try_get(post, 'id')  # TODO: Generate id instead?
+    sim: Simulation = Simulation(asyncio.get_event_loop(), try_get(post, 'fmu'), datasource.byte_format)
     request.app['simulations'][simulation_id] = sim
     client = request.app['ws'][session_id]
     sim.output_refs = [int(s) for s in post.getall('output_refs')]  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     input_refs = [int(s) for s in post.getall('input_refs')]
     measurement_refs = [int(s) for s in post.getall('measurement_refs')]
     sim.set_inputs(input_refs, measurement_refs)
-    return web.HTTPTemporaryRedirect(
-        request.app.router['simulation'].url_for(id=simulation_id)
-    )
+    raise web.HTTPCreated()
 
 
 @routes.get('/simulations/{id}', name='simulation_detail')

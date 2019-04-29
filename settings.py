@@ -3,12 +3,10 @@ import logging
 
 from cryptography.fernet import Fernet
 
-
 HOST = '0.0.0.0'
 PORT = 1337
 
-# UDP_HOST: '0.0.0.0'
-# UDP_PORT: 7331
+UDP_ADDR = ('0.0.0.0', 7331)
 
 KAFKA_SERVER = 'localhost:9092'
 
