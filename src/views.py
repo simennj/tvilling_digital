@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import traceback
 
 from aiohttp import web, WSMessage
 from aiohttp_session import get_session
@@ -13,8 +12,19 @@ routes = RouteTableDefDocs()
 logger = logging.getLogger(__name__)
 
 
+@routes.get('/session')
+async def session_endpoint(request: web.Request):
+    """Only returns a session cookie
+
+    Generates and returns a session cookie.
+    """
+    session = await get_session(request)
+    session['id'] = request.remote  # TODO: better id
+    return web.HTTPOk()
+
+
 @routes.get('/')
-async def test(request: web.Request):
+async def index(request: web.Request):
     """The API index
 
     A standard HTTP request will return a sample page with a simple example of api use.
