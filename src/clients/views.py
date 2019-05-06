@@ -1,7 +1,7 @@
 from aiohttp import web
 from aiohttp_session import get_session, Session
 
-from src.connections import Client
+from src.clients.models import Client
 from src.utils import RouteTableDefDocs
 
 routes = RouteTableDefDocs()

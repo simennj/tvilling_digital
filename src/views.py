@@ -4,7 +4,7 @@ import logging
 from aiohttp import web, WSMessage
 from aiohttp_session import get_session
 
-from src.connections import Client
+from src.clients.models import Client
 from src.utils import RouteTableDefDocs
 
 routes = RouteTableDefDocs()
@@ -44,7 +44,7 @@ async def index(request: web.Request):
         await ws.prepare(request)
         if client_id not in request.app['clients']:
             logger.info('New connection from %s', request.remote)
-            request.app['clients'][client_id] = Client(asyncio.get_event_loop())
+            request.app['clients'][client_id] = Client()
         else:
             logger.info('Reconnection from %s', request.remote)
         client = request.app['clients'][client_id]

@@ -3,14 +3,12 @@ import datetime
 import json
 import logging
 import struct
-import traceback
 from abc import ABC, abstractmethod
 from array import array
-from asyncio import AbstractEventLoop, transports
-from typing import Tuple, List, Optional, Set
+from asyncio import AbstractEventLoop
+from typing import Tuple, List
 
 import aiokafka
-from aiohttp import web, WSCloseCode
 
 from src import simulation
 
@@ -81,7 +79,7 @@ class Producer:
         try:
             asyncio.wait_for(self.task, timeout=timeout)
         except TimeoutError as e:
-            logger.exception('Error when stopping producer to topic %', self.topic)
+            logger.exception('Error when stopping producer to topic %s', self.topic)
 
 
 class Simulation(Consumer, Producer):
@@ -140,32 +138,6 @@ class Simulation(Consumer, Producer):
     def stop(self, timeout=5):
         super().stop(timeout)
         self.twin.stop()
-
-
-class Client(Consumer):
-
-    def __init__(self, loop: asyncio.AbstractEventLoop):
-        self._websocket_connections: Set[web.WebSocketResponse] = set()
-        super().__init__(loop)
-
-    async def _receive(self, messages: List[aiokafka.ConsumerRecord]):
-        for ws in self._websocket_connections:
-            await ws.send_bytes(b''.join(message.value for message in messages))
-
-    async def add_websocket_connection(self, ws: web.WebSocketResponse):
-        self._websocket_connections.add(ws)
-
-    async def remove_websocket_connection(self, ws: web.WebSocketResponse):
-        self._websocket_connections.remove(ws)
-
-    async def close(self):
-        for ws in self._websocket_connections:
-            await ws.close(code=WSCloseCode.GOING_AWAY, message=b'Shutdown')
-
-    def dict_repr(self):
-        return {
-            'connections': len(self._websocket_connections)
-        }
 
 
 
