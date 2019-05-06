@@ -26,8 +26,8 @@ async def datasource_start(request: web.Request):
 
     Post parameters:
     - id: the id to use for the source
-    - address: the address to receive data on
-    - port: the port to receive data on
+    - address: the address to receive data from
+    - port: the port to receive data from
     - output_name: the names of the outputs
       Must be all the outputs and in the same order as in the byte stream.
     - byte_format: the python struct format string .
@@ -42,10 +42,16 @@ async def datasource_start(request: web.Request):
 
     post = await request.post()
     source_id = try_get(post, 'id')
+    if not source_id:
+        raise web.HTTPUnprocessableEntity(reason='Invalid id')
     addr: typing.Tuple[str, int] = (try_get(post, 'address'), int(try_get(post, 'port')))
     topic = f'UDP_{addr[0]}_{addr[1]}'
-    if post.get('catman', '') is 'true':
-        byte_format = generate_catman_byte_formats(post.get('single', '') is 'true')
+    output_names = post.getall('output_name')
+    if post.get('catman', ''):
+        byte_format = generate_catman_byte_formats(
+            output_names=output_names,
+            single=bool(post.get('single', ''))
+        )
     else:
         byte_format = try_get(post, 'byte_format')
     request.app['datasources'].set_source(
@@ -53,7 +59,7 @@ async def datasource_start(request: web.Request):
         addr=addr,
         topic=topic,
         byte_format=byte_format,
-        data_names=post.getall('output_name')
+        data_names=output_names
     )
     raise web.HTTPCreated()
 

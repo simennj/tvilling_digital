@@ -17,15 +17,15 @@ class UdpDatasource:
     topic: str
 
 
-def generate_catman_byte_formats(data_names: List[str], single: bool = False) -> str:
+def generate_catman_byte_formats(output_names: List[str], single: bool = False) -> str:
     """
 
     :param single: true if the data from Catman is single precision (4 bytes each)
-    :param data_names: a list of the names of the input data
+    :param output_names: a list of the names of the input data
     """
     byte_format = '<HHI'
     measurement_type = 's' if single else 'd'
-    byte_format + (measurement_type * len(data_names))
+    byte_format += (measurement_type * len(output_names))
     return byte_format
 
 
@@ -73,7 +73,7 @@ class UdpReceiver(asyncio.DatagramProtocol):
         self.loop.create_task(self.producer.start())
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
-        self.loop.run_until_complete(self.producer.stop())
+        self.loop.create_task(self.producer.stop())
 
     def error_received(self, exc: Exception) -> None:
         logger.exception('error in datasource: %s', exc)

@@ -7,10 +7,14 @@
 <body>
 <div id="controls">
     <div>
-        <form method="post" action="subscribe" name="subscribe">
+        <form method="post" action="/datasources/create" name="subscribe">
+            <label>
+                Id:
+                <input type="text" name="id" value="testrig">
+            </label>
             <label>
                 Address:
-                <input type="text" name="address" value="0.0.0.0">
+                <input type="text" name="address" value="129.241.90.108">
             </label>
             <label>
                 Port:
@@ -18,6 +22,10 @@
             </label>
             <br>
             Sensors:
+            <label>
+                Catman:
+                <input type="checkbox" name="catman" checked>
+            </label>
             <table>
                 <thead>
                 <tr>
@@ -35,7 +43,7 @@
                 </tr>
                 </tfoot>
             </table>
-            <button>subscribe</button>
+            <button type="submit">Create</button>
         </form>
     </div>
     <div>
@@ -93,31 +101,27 @@
         {responsive: true}
     );
 
-    function addSensor([name = '', type = '']) {
+    function addSensor(name = '') {
         sensors.insertAdjacentHTML('beforeend',
             '<tr>' +
-            '<td><label><input type="text" name="name" value="' + name + '"></label></td>' +
-            '<td><label><input type="text" name="type" value="' + type + '" minlength="1" maxlength="1"></label></td>' +
+            '<td><label><input type="text" name="output_name" value="' + name + '"></label></td>' +
             '</tr>'
         );
     }
 
     [
-        ['ID', 'H'],
-        ['Number of channels', 'H'],
-        ['Sequence counter', 'I'],
-        ['Time 1 - default sample rate', 'd'],
-        ['Time 1 - slow sample rate', 'd'],
-        ['Time 1 - fast sample rate', 'd'],
-        ['Load [N]', 'd'],
-        ['Displacement [mm]', 'd'],
-        ['AccelerometerX', 'd'],
-        ['0 Degrees Transvers on Axle', 'd'],
-        ['Rosett +45 Degrees Along Axle', 'd'],
-        ['Rosett 90 Degrees Along Axle', 'd'],
-        ['Rosett -45 Degrees Along Axle', 'd'],
-        ['Radius +45 Degrees Along Axle', 'd'],
-        ['MX840A 0 hardware time default sample rate', 'd']
+        'Time 1 - default sample rate',
+        'Time 1 - slow sample rate',
+        'Time 1 - fast sample rate',
+        'Load [N]',
+        'Displacement [mm]',
+        'AccelerometerX',
+        '0 Degrees Transvers on Axle',
+        'Rosett +45 Degrees Along Axle',
+        'Rosett 90 Degrees Along Axle',
+        'Rosett -45 Degrees Along Axle',
+        'Radius +45 Degrees Along Axle',
+        'MX840A 0 hardware time default sample rate',
     ].forEach(addSensor);
 
     document.forms.namedItem('subscribe').addEventListener('submit', ajaxSubmit);
