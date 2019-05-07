@@ -3,7 +3,7 @@ import typing
 from aiohttp import web
 from aiohttp_session import get_session, Session
 
-from src.datasources.models import generate_catman_byte_formats
+from src.datasources.models import generate_catman_outputs
 from src.utils import RouteTableDefDocs, dumps, try_get
 
 routes = RouteTableDefDocs()
@@ -48,7 +48,7 @@ async def datasource_start(request: web.Request):
     topic = f'UDP_{addr[0]}_{addr[1]}'
     output_names = post.getall('output_name')
     if post.get('catman', ''):
-        byte_format = generate_catman_byte_formats(
+        output_names, byte_format = generate_catman_outputs(
             output_names=output_names,
             single=bool(post.get('single', ''))
         )

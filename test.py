@@ -12,7 +12,7 @@ from fmpy.fmi2 import FMU2Slave, fmi2Real, fmi2ValueReference
 from kafka import KafkaConsumer, KafkaProducer
 
 import settings
-from src.datasources.models import generate_catman_byte_formats
+from src.datasources.models import generate_catman_outputs
 
 
 def simulate(
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         inputs_refs=[0],
         time_measurement_ref=-1,
         time_input_ref=1,
-        byte_format=generate_catman_byte_formats([
+        byte_format=generate_catman_outputs([
             'Time',
             'Garbage',
             'Garbage',

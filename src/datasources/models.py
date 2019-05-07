@@ -17,7 +17,7 @@ class UdpDatasource:
     topic: str
 
 
-def generate_catman_byte_formats(output_names: List[str], single: bool = False) -> str:
+def generate_catman_outputs(output_names: List[str], single: bool = False) -> Tuple[List[str], str]:
     """
 
     :param single: true if the data from Catman is single precision (4 bytes each)
@@ -26,7 +26,7 @@ def generate_catman_byte_formats(output_names: List[str], single: bool = False) 
     byte_format = '<HHI'
     measurement_type = 's' if single else 'd'
     byte_format += (measurement_type * len(output_names))
-    return byte_format
+    return ['id', 'channels', 'counter', *output_names], byte_format
 
 
 class UdpReceiver(asyncio.DatagramProtocol):
