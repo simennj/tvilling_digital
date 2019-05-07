@@ -30,7 +30,6 @@
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Type</th>
                 </tr>
                 </thead>
                 <tbody id="sensors">
@@ -47,21 +46,46 @@
         </form>
     </div>
     <div>
-        <form method="post" action="simulate" name="simulate">
+        <form method="post" action="/simulations/create" name="simulate">
             <label>
-                Address:
-                <input type="text" name="address" value="0.0.0.0">
+                Id:
+                <input type="text" name="id" value="testrigsim">
             </label>
             <label>
-                Port:
-                <input type="text" name="port" value="7331">
+                Datasource:
+                <input type="text" name="datasource" value="testrig">
             </label>
             <label>
-                <select>
-
-                </select>
+                Fmu:
+                <input type="text" name="fmu" value="testrig.fmu">
             </label>
-            <button>simulate</button>
+            <div id="sim_inputs">
+                Input:
+                <label>
+                    Input reference:
+                    <input type="number" name="input_ref" value="0">
+                </label>
+                <label>
+                    Measurement reference:
+                    <input type="number" name="measurement_ref" value="7">
+                </label>
+                <label>
+                    Measurement proportion:
+                    <input type="number" name="measurement_proportion" value="0.001">
+                </label>
+            </div>
+            <div id="sim_outputs">
+                Outputs:
+                <label>
+                    Output reference:
+                    <input type="number" name="output_ref" value="2">
+                </label>
+                <label>
+                    Output reference:
+                    <input type="number" name="output_ref" value="3">
+                </label>
+            </div>
+            <button>Create</button>
         </form>
         <span id="simulation"></span>
     </div>

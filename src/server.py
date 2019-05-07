@@ -10,13 +10,13 @@ from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
 from src import views
 from src.clients import views as client_views
-from src.connections import Simulation
 from src.clients.models import Client
 from src.datasources import views as datasource_views
 from src.datasources.models import UdpReceiver
 from src.fmus import views as fmu_views
 from src.kafka import consume_from_kafka
 from src.simulations import views as simulation_views
+from src.simulations.models import Simulation
 
 logger = logging.getLogger(__name__)
 

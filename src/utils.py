@@ -52,3 +52,12 @@ def try_get(post, key):
         return post[key]
     except KeyError:
         raise web.HTTPUnprocessableEntity(reason=f'Attempted to get {key} from request and failed')
+
+
+async def try_get_all(post, key, parser=None):
+    try:
+        if parser is not None:
+            return [parser(s) for s in post.getall(key)]
+        return [s for s in post.getall(key)]
+    except KeyError:
+        raise web.HTTPUnprocessableEntity(reason=f'Attempted to get {key} from request and failed')

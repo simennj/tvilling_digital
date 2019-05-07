@@ -1,11 +1,9 @@
-import asyncio
 import os
 
 from aiohttp import web
-from aiohttp_session import get_session
 
-from src.connections import Simulation
-from src.utils import find_in_dir, RouteTableDefDocs, try_get
+from src.simulations.models import Simulation
+from src.utils import find_in_dir, RouteTableDefDocs, try_get, dumps, try_get_all
 
 routes = RouteTableDefDocs()
 
@@ -18,36 +16,52 @@ async def simulation_list(request: web.Request):
     Append /create to create a new simulation.
     """
 
-    return web.json_response({id: s.dict_repr() for id, s in request.app['simulations'].items()})
+    return web.json_response(request.app['simulations'], dumps=dumps)
 
 
 @routes.post('/simulations/create', name='simulation_create')
-async def simulation_start(request: web.Request):
+async def simulation_create(request: web.Request):
     """Create a new simulation from post request.
 
     Post params:
     - id: id of created simulation
+    - fmu: id of fmu to be used
     - datasource: id of datasource to use as input to simulation
-    - output_refs: reference values to the outputs to be used
-    - input_refs: reference values to the inputs to be used
-    - measurement_refs: reference values to the measurement inputs to be used for the inputs.
-      Must be in the same order as input_refs.
-    returns redirect to created simulation page
+    - output_ref: reference values to the outputs to be used
+    - input_ref: reference values to the inputs to be used
+    - measurement_ref: reference values to the measurement inputs to be used for the inputs.
+      Must be in the same order as input_ref.
+    - measurement_proportions: scale to be used on measurement values before inputting them.
+      Must be in the same order as input_ref.
+    - time_input_ref: timestep input reference for Fedem fmus.
+      Will not be used if set to -1
+    - time_measurement_ref: timestep measurement reference
     """
 
     post = await request.post()
+    sim_id = try_get(post, 'id')  # TODO: Generate id instead?
+    fmu = try_get(post, 'fmu')
+    input_refs = await try_get_all(post, 'input_ref', int)
+    measurement_refs = await try_get_all(post, 'measurement_ref', int)
+    measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
+    output_refs = await try_get_all(post, 'output_ref', int)
     datasource_id = try_get(post, 'datasource')
     datasource = request.app['datasources'].get_source(datasource_id)
-    session_id = (await get_session(request))['id']
-    simulation_id = try_get(post, 'id')  # TODO: Generate id instead?
-    sim: Simulation = Simulation(asyncio.get_event_loop(), try_get(post, 'fmu'), datasource.byte_format)
-    request.app['simulations'][simulation_id] = sim
-    client = request.app['ws'][session_id]
-    sim.output_refs = [int(s) for s in post.getall('output_refs')]  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-    input_refs = [int(s) for s in post.getall('input_refs')]
-    measurement_refs = [int(s) for s in post.getall('measurement_refs')]
-    sim.set_inputs(input_refs, measurement_refs)
-    raise web.HTTPCreated()
+    sim: Simulation = Simulation(
+        sim_id=sim_id,
+        fmu=fmu,
+        fmu_dir=request.app['settings'].FMU_DIR,
+        datasource=datasource,
+        time_input_ref=int(post.get('time_input_ref', '-1')),
+        time_measurement_ref=int(post.get('time_measurement_ref', '-1')),
+        sim_root_dir=request.app['settings'].SIMULATION_DIR,
+        kafka_server=request.app['settings'].KAFKA_SERVER,
+    )
+    request.app['simulations'][sim_id] = sim
+    sim.set_inputs(input_refs, measurement_refs, measurement_proportions)
+    sim.set_outputs(output_refs)
+    sim.start()
+    raise web.HTTPAccepted()
 
 
 @routes.get('/simulations/{id}', name='simulation_detail')
@@ -56,10 +70,48 @@ async def simulation_detail(request: web.Request):
 
     To get the simulations result file append /res
     To get the simulations models append /models/
+    To set the simulation outputs append /outputs
+    To set the simulation inputs append /inputs
     To stop the simulation append /stop
     """
 
     return web.json_response(request.app['simulations'][request.match_info['id']].dict_repr())
+
+
+@routes.post('/simulations/{id}/outputs', name='simulation_outputs_update')
+async def simulation_outputs_update(request: web.Request):
+    """Update the simulation outputs
+
+        Post params:
+        - output_ref: reference values to the outputs to be used
+    """
+
+    post = await request.post()
+    sim_id = request.match_info['id']
+    output_refs = await try_get_all(post, 'output_ref', int)
+    request.app['simulations'][sim_id].set_outputs(output_refs)
+    raise web.HTTPAccepted()
+
+
+@routes.post('/simulations/{id}/inputs', name='simulation_inputs_update')
+async def simulation_inputs_update(request: web.Request):
+    """Update the simulation inputs
+
+        Post params:
+        - input_ref: reference values to the inputs to be used
+        - measurement_ref: reference values to the measurement inputs to be used for the inputs.
+          Must be in the same order as input_ref.
+        - measurement_proportions: scale to be used on measurement values before inputting them.
+          Must be in the same order as input_ref.
+    """
+
+    post = await request.post()
+    sim_id = request.match_info['id']
+    input_refs = await try_get_all(post, 'input_ref', int)
+    measurement_refs = await try_get_all(post, 'measurement_ref', int)
+    measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
+    request.app['simulations'][sim_id].set_inputs(input_refs, measurement_refs, measurement_proportions)
+    raise web.HTTPAccepted()
 
 
 @routes.get('/simulations/{id}/res', name='simulation_res')
