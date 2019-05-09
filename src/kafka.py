@@ -16,11 +16,14 @@ async def consume_from_kafka(app: web.Application):
         bootstrap_servers=app['settings'].KAFKA_SERVER
     )
     try:
-        try:
-            await consumer.start()
-        except KafkaConnectionError:
-            logger.exception('Could not connect to Kafka server, starting without Kafka (most things will not work)')
-            return
+        while True:
+            try:
+                await consumer.start()
+                break
+            except KafkaConnectionError:
+                logger.exception('Could not connect to Kafka server, retrying in 30 seconds')
+                await asyncio.sleep(30)
+        logger.info('Connected to Kafka server')
         consumer.subscribe(pattern='.*')
         while True:
             try:
