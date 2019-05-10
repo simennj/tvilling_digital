@@ -40,22 +40,8 @@ async def cleanup_background_tasks(app):
     await app['kafka']
 
 
-@web.middleware
-async def error_middleware(request, handler):
-    try:
-        response = await handler(request)
-        if response.status != 404:
-            return response
-        message = response.message
-    except web.HTTPException as ex:
-        if ex.status != 404:
-            raise
-        message = ex.reason
-    return web.json_response({'error': message})
-
-
 def init_app(settings) -> web.Application:
-    app = web.Application(middlewares=[error_middleware])
+    app = web.Application()
     app['settings'] = settings
     aiohttp_session.setup(app, EncryptedCookieStorage(settings.SECRET_KEY))
     app.router.add_routes(views.routes)
