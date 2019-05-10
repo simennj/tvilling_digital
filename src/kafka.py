@@ -6,7 +6,6 @@ import aiokafka
 from aiohttp import web
 from kafka.errors import KafkaConnectionError
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +30,9 @@ async def consume_from_kafka(app: web.Application):
                 messages: Dict[aiokafka.TopicPartition, List[aiokafka.ConsumerRecord]] = await consumer.getmany()
                 for topic, topic_messages in messages.items():
                     for subscriber in app['subscribers'][topic.topic]:
-                        await subscriber._receive(topic_messages)
+                        await subscriber.receive(
+                            topic.topic.encode() + b':' + b''.join(message.value for message in topic_messages)
+                        )
             except KafkaConnectionError as e:
                 logger.exception('Lost connection to kafka server, waiting 10 seconds before retrying')
                 await asyncio.sleep(10)

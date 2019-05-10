@@ -1,4 +1,3 @@
-import asyncio
 from typing import Set, List
 
 import aiokafka
@@ -10,9 +9,9 @@ class Client:
     def __init__(self):
         self._websocket_connections: Set[web.WebSocketResponse] = set()
 
-    async def _receive(self, messages: List[aiokafka.ConsumerRecord]):
+    async def receive(self, bytes):
         for ws in self._websocket_connections:
-            await ws.send_bytes(b''.join(message.value for message in messages))
+            await ws.send_bytes(bytes)
 
     async def add_websocket_connection(self, ws: web.WebSocketResponse):
         self._websocket_connections.add(ws)
