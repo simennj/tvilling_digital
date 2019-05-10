@@ -41,19 +41,24 @@ async def simulation_create(request: web.Request):
     post = await request.post()
     sim_id = try_get(post, 'id')  # TODO: Generate id instead?
     fmu = try_get(post, 'fmu')
-    input_refs = await try_get_all(post, 'input_ref', int)
-    measurement_refs = await try_get_all(post, 'measurement_ref', int)
-    measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
-    output_refs = await try_get_all(post, 'output_ref', int)
     datasource_id = try_get(post, 'datasource')
     datasource = request.app['datasources'].get_source(datasource_id)
+    try:
+        input_refs = await try_get_all(post, 'input_ref', int)
+        measurement_refs = await try_get_all(post, 'measurement_ref', int)
+        measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
+        output_refs = await try_get_all(post, 'output_ref', int)
+        time_input_ref = int(post.get('time_input_ref', '-1'))
+        time_measurement_ref = int(post.get('time_measurement_ref', '-1'))
+    except ValueError:
+        raise web.HTTPUnprocessableEntity(reason='An unprocessable ref was given')
     sim: Simulation = Simulation(
         sim_id=sim_id,
         fmu=fmu,
         fmu_dir=request.app['settings'].FMU_DIR,
         datasource=datasource,
-        time_input_ref=int(post.get('time_input_ref', '-1')),
-        time_measurement_ref=int(post.get('time_measurement_ref', '-1')),
+        time_input_ref=time_input_ref,
+        time_measurement_ref=time_measurement_ref,
         sim_root_dir=request.app['settings'].SIMULATION_DIR,
         kafka_server=request.app['settings'].KAFKA_SERVER,
     )
