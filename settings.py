@@ -8,7 +8,7 @@ PORT = 1337
 
 UDP_ADDR = ('0.0.0.0', 7331)
 
-KAFKA_SERVER = 'localhost:9092'
+KAFKA_SERVER = 'localhost:9094'
 
 # DATA_SOURCE_NAME = 'Driver=SQLite;Database=sqlite.db'
 
