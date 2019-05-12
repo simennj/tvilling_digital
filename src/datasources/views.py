@@ -4,7 +4,7 @@ from aiohttp import web
 from aiohttp_session import get_session, Session
 
 from src.datasources.models import generate_catman_outputs
-from src.utils import RouteTableDefDocs, dumps, try_get
+from src.utils import RouteTableDefDocs, dumps, try_get, get_client
 
 routes = RouteTableDefDocs()
 
@@ -86,10 +86,7 @@ async def get_source(app, topic):
 @routes.get('/datasources/{id}/subscribe', name='datasource_subscribe')
 async def datasource_subscribe(request: web.Request):
     """Subscribe to the datasource with the given id"""
-    session: Session = await get_session(request)
-    if 'id' not in session or session['id'] not in request.app['clients']:
-        raise web.HTTPForbidden()
-    client = request.app['clients'][session['id']]
+    client = await get_client(request)
     datasource_id = request.match_info['id']
     if datasource_id in request.app['datasources']:
         topic = request.app['datasources'].get_source(datasource_id).topic

@@ -3,7 +3,7 @@ import os
 from aiohttp import web
 
 from src.simulations.models import Simulation
-from src.utils import find_in_dir, RouteTableDefDocs, try_get, dumps, try_get_all
+from src.utils import find_in_dir, RouteTableDefDocs, try_get, dumps, try_get_all, get_client
 
 routes = RouteTableDefDocs()
 
@@ -146,6 +146,18 @@ async def simulation_model_file(request: web.Request):
     model_dir = os.path.join(sim_dir, 'resources', 'link_DB')
     model_file = await find_in_dir(request.match_info['model'], model_dir)
     return web.FileResponse(model_file)
+
+
+@routes.get('/simulations/{id}/subscribe', name='simulation_subscribe')
+async def simulation_subscribe(request: web.Request):
+    """Subscribe to the simulation with the given id"""
+    client = await get_client(request)
+    simulation_id = request.match_info['id']
+    if simulation_id in request.app['simulations']:
+        topic = request.app['simulations'][simulation_id].topic
+        request.app['subscribers'][topic].add(client)
+        raise web.HTTPOk()
+    raise web.HTTPNotFound()
 
 
 @routes.post('/simulations/{id}/stop', name='simulation_stop')

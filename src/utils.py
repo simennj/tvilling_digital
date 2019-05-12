@@ -1,10 +1,12 @@
 import functools
 import json
 import os
+import re
 from typing import Any
 
 from aiohttp import web, hdrs
 from aiohttp.web_routedef import _Deco, _HandlerType, RouteDef
+from aiohttp_session import Session, get_session
 
 
 def make_serializable(o):
@@ -51,7 +53,7 @@ def try_get(post, key):
     try:
         return post[key]
     except KeyError:
-        raise web.HTTPUnprocessableEntity(reason=f'Attempted to get {key} from request and failed')
+        raise web.HTTPUnprocessableEntity(reason=f'{key} is missing')
 
 
 async def try_get_all(post, key, parser=None):
@@ -60,4 +62,29 @@ async def try_get_all(post, key, parser=None):
             return [parser(s) for s in post.getall(key)]
         return [s for s in post.getall(key)]
     except KeyError:
-        raise web.HTTPUnprocessableEntity(reason=f'Attempted to get {key} from request and failed')
+        raise web.HTTPUnprocessableEntity(
+            reason=f'Attempted to get {key} from request and failed'
+        )
+    except ValueError:
+        raise web.HTTPUnprocessableEntity(
+            reason=f'A value from {key} was not parsable as {parser.__name__}'
+        )
+
+validator_string = r'\A[a-zA-Z_][a-zA-Z0-9_]{0,20}\Z'
+
+validator = re.compile(r'\A[a-zA-Z_][a-zA-Z0-9_]{0,20}\Z')
+
+
+def try_get_validate(post, key):
+    value = try_get(post, key)
+    if not validator.match(value):
+        raise web.HTTPUnprocessableEntity(reason=f'invalid {key} value, must match {validator_string}')
+    return value
+
+
+async def get_client(request):
+    session: Session = await get_session(request)
+    if 'id' not in session or session['id'] not in request.app['clients']:
+        raise web.HTTPForbidden()
+    client = request.app['clients'][session['id']]
+    return client
