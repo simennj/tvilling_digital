@@ -43,15 +43,15 @@ async def simulation_create(request: web.Request):
     fmu = try_get(post, 'fmu')
     datasource_id = try_get(post, 'datasource')
     datasource = request.app['datasources'].get_source(datasource_id)
+    input_refs = await try_get_all(post, 'input_ref', int)
+    measurement_refs = await try_get_all(post, 'measurement_ref', int)
+    measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
+    output_refs = await try_get_all(post, 'output_ref', int)
     try:
-        input_refs = await try_get_all(post, 'input_ref', int)
-        measurement_refs = await try_get_all(post, 'measurement_ref', int)
-        measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
-        output_refs = await try_get_all(post, 'output_ref', int)
         time_input_ref = int(post.get('time_input_ref', '-1'))
         time_measurement_ref = int(post.get('time_measurement_ref', '-1'))
     except ValueError:
-        raise web.HTTPUnprocessableEntity(reason='An unprocessable ref was given')
+        raise web.HTTPUnprocessableEntity(reason='An unprocessable time ref was given')
     sim: Simulation = Simulation(
         sim_id=sim_id,
         fmu=fmu,
@@ -80,7 +80,10 @@ async def simulation_detail(request: web.Request):
     To stop the simulation append /stop
     """
 
-    return web.json_response(request.app['simulations'][request.match_info['id']].dict_repr())
+    try:
+        return web.json_response(request.app['simulations'][request.match_info['id']], dumps=dumps)
+    except KeyError:
+        raise web.HTTPNotFound()
 
 
 @routes.post('/simulations/{id}/outputs', name='simulation_outputs_update')

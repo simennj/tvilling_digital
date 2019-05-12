@@ -15,6 +15,7 @@ from src.datasources.models import UdpDatasource
 def simulate(
         connection: Connection,
         model: str,
+        topic: str,
         source_topic: str,
         source_format: str,
         sim_id: str,
@@ -27,7 +28,7 @@ def simulate(
         time_input_ref: int,
         output_refs: List[int]
 ):
-    sim_dir = os.path.abspath(os.path.join(sim_root_dir, sim_id))
+    sim_dir = os.path.abspath(os.path.join(sim_root_dir, sim_id)) # TODO: does not verify directory (sim_id could for example contain ..)
     if os.path.exists(sim_dir):
         shutil.rmtree(sim_dir)
     os.mkdir(sim_dir)
@@ -42,7 +43,6 @@ def simulate(
         value_serializer=bytes,
         bootstrap_servers=kafka_server
     )
-    topic = f'FMU_{sim_id}'
 
     outputs, vr = prepare_outputs(output_refs)
     model_description = fmpy.read_model_description(model)
@@ -65,6 +65,7 @@ def simulate(
     # Use consumer.poll() instead of iterator?
     for msg in consumer:
 
+        # TODO: Send over kafka instead?
         while connection.poll():
             conn_msg = connection.recv()
             if conn_msg['type'] == 'output_refs':
@@ -73,6 +74,7 @@ def simulate(
             if conn_msg['type'] == 'inputs':
                 inputs_refs, measurement_refs, measurement_proportions = conn_msg['value']
 
+        # TODO: will only use the first measurement if there are multiple measurements in the message
         data = struct.unpack(source_format, msg.value)
         current_time = data[time_measurement_ref]
         dt = current_time - last_time
@@ -107,6 +109,7 @@ class Simulation:
                  time_input_ref: int, time_measurement_ref: int, sim_root_dir, kafka_server) -> None:
         self.sim_id = sim_id
         self.fmu = fmu
+        self.topic = f'FMU_{sim_id}'
         self.datasource = datasource
         self.connection, connection = multiprocessing.Pipe()
         self.output_refs = []
@@ -118,17 +121,18 @@ class Simulation:
         kwargs = dict(
             connection=connection,
             model=os.path.abspath(os.path.join(fmu_dir, fmu)),
+            topic= self.topic,
             source_topic=datasource.topic,
             source_format=datasource.byte_format,
             sim_id=sim_id,
             sim_root_dir=sim_root_dir,
             kafka_server=kafka_server,
-            measurement_refs=[],
-            measurement_proportions=[],
-            inputs_refs=[],
+            measurement_refs=self.measurement_refs,
+            measurement_proportions=self.measurement_proportions,
+            inputs_refs=self.input_refs,
             time_measurement_ref=time_measurement_ref,
             time_input_ref=time_input_ref,
-            output_refs=[],
+            output_refs=self.output_refs,
         )
         self.process = multiprocessing.Process(target=simulate, kwargs=kwargs)
 
