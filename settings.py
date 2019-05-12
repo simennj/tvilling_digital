@@ -12,9 +12,10 @@ KAFKA_SERVER = 'localhost:9094'
 
 # DATA_SOURCE_NAME = 'Driver=SQLite;Database=sqlite.db'
 
-FMU_DIR = 'files/fmu'
-SIMULATION_DIR = 'files/simulation'
-DATASOURCE_DIR = 'files/datasource'
+FMU_DIR = 'files/fmus'
+FILTER_DIR = 'files/filters'
+SIMULATION_DIR = 'files/simulations'
+DATASOURCE_DIR = 'files/datasources'
 
 #  Will generate a new key on each run, could use a pregenerated key instead of Fernet.generate_key()
 SECRET_KEY = base64.urlsafe_b64decode(Fernet.generate_key())

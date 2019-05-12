@@ -2,5 +2,6 @@
 venv/
 *.fmu
 *.zip
-files/
+/files/*
+!/files/filters/
 .vscode/

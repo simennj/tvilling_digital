@@ -13,7 +13,9 @@ from src.clients import views as client_views
 from src.clients.models import Client
 from src.datasources import views as datasource_views
 from src.datasources.models import UdpReceiver
+from src.filters.models import Filter
 from src.fmus import views as fmu_views
+from src.filters import views as filter_views
 from src.kafka import consume_from_kafka
 from src.simulations import views as simulation_views
 from src.simulations.models import Simulation
@@ -49,6 +51,7 @@ def init_app(settings) -> web.Application:
     app.router.add_routes(datasource_views.routes)
     app.router.add_routes(client_views.routes)
     app.router.add_routes(fmu_views.routes)
+    app.router.add_routes(filter_views.routes)
 
     cors = aiohttp_cors.setup(app, defaults={
         '*': aiohttp_cors.ResourceOptions(
@@ -62,9 +65,12 @@ def init_app(settings) -> web.Application:
     for route in list(app.router.routes()):
         cors.add(route)
 
+    # TODO: make usable over multiple application instances (scaling)?
     app['clients']: Dict[str, Client] = {}
     app['simulations']: Dict[str, Simulation] = {}
+    app['filters']: Dict[str, Filter] = {}
     app['subscribers'] = defaultdict(set)
+
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
     return app
