@@ -4,5 +4,6 @@ aiohttp_session[secure]
 aiokafka
 aiohttp_cors
 numpy
+scipy
 
 matplotlib

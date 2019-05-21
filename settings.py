@@ -16,9 +16,12 @@ FMU_DIR = 'files/fmus'
 FILTER_DIR = 'files/filters'
 SIMULATION_DIR = 'files/simulations'
 DATASOURCE_DIR = 'files/datasources'
+BLUEPRINT_DIR = 'files/blueprints'
+PROCESSOR_DIR = 'files/processors'
 
-#  Will generate a new key on each run, could use a pregenerated key instead of Fernet.generate_key()
-SECRET_KEY = base64.urlsafe_b64decode(Fernet.generate_key())
+SECRET_KEY = 'RJueaGk_wxvgOonaSHJebXi-uJcxqQP07bCkl9WgApQ='  # base64.urlsafe_b64decode(Fernet.generate_key())
+
+PASSWORD = ''
 
 LOG_FILE = ''  # Will print log to stderr if no file is specified  TODO: will most likely be problems with writing to files from processes
 LOG_LEVEL = logging.INFO

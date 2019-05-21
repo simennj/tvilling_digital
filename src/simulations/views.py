@@ -96,6 +96,8 @@ async def simulation_outputs_update(request: web.Request):
 
     post = await request.post()
     sim_id = request.match_info['id']
+    if sim_id not in request.app['simulations']:
+        return web.HTTPNotFound()
     output_refs = await try_get_all(post, 'output_ref', int)
     request.app['simulations'][sim_id].set_outputs(output_refs)
     raise web.HTTPAccepted()
@@ -129,7 +131,7 @@ async def simulation_res(request: web.Request):
     return web.FileResponse(os.path.join(sim_dir, 'resources', 'model', 'fedem_solver.res'))
 
 
-@routes.get('/simulations/{id}/models', name='simulation_models')
+@routes.get('/simulations/{id}/models/', name='simulation_models')
 async def simulation_models(request: web.Request):
     """List the models in the given simulation.
 

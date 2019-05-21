@@ -31,11 +31,13 @@ async def consume_from_kafka(app: web.Application):
                 for topic, topic_messages in messages.items():
                     for subscriber in app['subscribers'][topic.topic]:
                         await subscriber.receive(
-                            topic.topic.encode() + b':' + b''.join(message.value for message in topic_messages)
+                            topic.topic.encode() + b''.join(message.value for message in topic_messages)
                         )
             except KafkaConnectionError as e:
                 logger.exception('Lost connection to kafka server, waiting 10 seconds before retrying')
                 await asyncio.sleep(10)
+            except ConnectionAbortedError:
+                logger.warning('Got a connection aborted error when trying to send to a websocket')
     except asyncio.CancelledError:
         pass
     except:

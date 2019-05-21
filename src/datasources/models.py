@@ -13,19 +13,31 @@ logger = logging.getLogger(__name__)
 class UdpDatasource:
     """Class for describing an udp datasource"""
     addr: Tuple[str, int]
-    byte_format: str
-    data_names: List[str]
+    input_byte_format: str
+    input_names: List[str]
+    output_refs: List[int]
     time_index: int
-    topic: str
-    msg_bytes: int = field(init=False)
+    topic: str = None
+    output_names: List[str] = field(init=False)
+    byte_format: str = field(init=False)
+    output_byte_count: int = field(init=False)
+    input_byte_count: int = field(init=False)
     time_bytes_start: int = field(init=False)
 
     def __post_init__(self):
-        self.msg_bytes = struct.calcsize(self.byte_format)
-        self.time_bytes_start = struct.calcsize(self.byte_format[1:][:self.time_index])
+        self.time_index = self.time_index % len(self.input_byte_format[1:])
+        self.input_byte_count = struct.calcsize(self.input_byte_format)
+        byte_types = self.input_byte_format[1:]
+        self.time_bytes_start = struct.calcsize(byte_types[:self.time_index])
+        self.byte_format = self.input_byte_format[0] + byte_types[self.time_index]
+        for ref in self.output_refs:
+            self.byte_format += byte_types[ref]
+        self.output_byte_count = struct.calcsize(self.byte_format)
+        self.output_names = [self.input_names[ref] for ref in self.output_refs]
 
 
-def generate_catman_outputs(output_names: List[str], single: bool = False) -> Tuple[List[str], str]:
+def generate_catman_outputs(output_names: List[str], output_refs, single: bool = False) -> Tuple[
+    List[str], List[int], str]:
     """
 
     :param single: true if the data from Catman is single precision (4 bytes each)
@@ -34,7 +46,8 @@ def generate_catman_outputs(output_names: List[str], single: bool = False) -> Tu
     byte_format = '<HHI'
     measurement_type = 's' if single else 'd'
     byte_format += (measurement_type * len(output_names))
-    return ['id', 'channels', 'counter', *output_names], byte_format
+    output_refs = [ref + 3 for ref in output_refs]
+    return ['id', 'channels', 'counter', *output_names], output_refs, byte_format
 
 
 class UdpReceiver(asyncio.DatagramProtocol):
@@ -46,18 +59,21 @@ class UdpReceiver(asyncio.DatagramProtocol):
         )
         self._addr_to_source = {}
         self._sources = {}
+        self.buffer = bytearray()
 
     def set_source(self,
                    source_id: str,
                    addr: Tuple[str, int],
                    topic: str,
-                   byte_format: str,
-                   data_names: List[str],
+                   input_byte_format: str,
+                   input_names: List[str],
+                   output_refs: List[int],
                    time_index: int
                    ) -> None:
         source = UdpDatasource(
-            byte_format=byte_format,
-            data_names=data_names,
+            input_byte_format=input_byte_format,
+            input_names=input_names,
+            output_refs=output_refs,
             time_index=time_index,
             addr=addr,
             topic=topic,
@@ -93,12 +109,17 @@ class UdpReceiver(asyncio.DatagramProtocol):
     def datagram_received(self, raw_data: bytes, addr: Tuple[str, int]) -> None:
         if addr in self._addr_to_source:
             source: UdpDatasource = self._addr_to_source[addr]
-            time_bytes_start = source.time_bytes_start
-            data = bytearray(raw_data)
-            for i in range(0, len(data), source.msg_bytes):
-                data[i:i+time_bytes_start+8] = data[i+time_bytes_start:i+time_bytes_start+8] + data[i:i+time_bytes_start]
-            # for measurement in struct.iter_unpack(source.byte_format, raw_data):
-            #     data += struct.pack(asdf, measurement[time_position], measurement
-            self.loop.create_task(self.producer.send(topic=source.topic, value=data))
+            data = bytearray(source.output_byte_count * (len(raw_data) // source.input_byte_count))
+            for i, msg in enumerate(struct.iter_unpack(source.input_byte_format, raw_data)):
+                data[i:i + source.output_byte_count] = struct.pack(source.byte_format, msg[source.time_index],
+                                                                   *[msg[ref] for ref in source.output_refs])
+            # time_bytes_start = source.time_bytes_start
+            # data = bytearray(raw_data)
+            # for i in range(0, len(data), source.msg_bytes):
+            #     data[i:i + time_bytes_start + 8] = data[i + time_bytes_start:i + time_bytes_start + 8] + data[i:i + time_bytes_start]
+            self.buffer += data
+            if len(self.buffer) > len(source.output_names) * 100:
+                self.loop.create_task(self.producer.send(topic=source.topic, value=self.buffer))
+                self.buffer = bytearray()
         else:
             logger.debug('%s attempted to send udp data but was not on the list of running datasources', addr)

@@ -7,7 +7,7 @@
 <body>
 <div id="controls">
     <div>
-        <form method="post" action="/datasources/create" name="subscribe">
+        <form method="post" action="/datasources/create" name="datasource">
             <label>
                 Id:
                 <input id="datasource_id" type="text" name="id" value="testrig">
@@ -41,63 +41,147 @@
                 <tfoot>
                 <tr>
                     <td colspan="2">
-                        <button type="button" onclick="addSensor([])">Add Sensor</button>
+                        <button type="button" onclick="addSensor([])">+</button>
                     </td>
                 </tr>
                 </tfoot>
             </table>
             <button type="submit">Create</button>
-            <button type="button" onclick="fetch('/datasources/'+document.querySelector('#datasource_id').value+'/start').then(console.log)">Start</button>
-            <button type="button" onclick="fetch('/datasources/'+document.querySelector('#datasource_id').value+'/subscribe').then(console.log)">Subscribe</button>
+            <button type="button" onclick="get('datasource', 'start')">Start</button>
+            <button type="button" onclick="get('datasource', 'stop')">Stop</button>
+            <button type="button" onclick="get('datasource', 'subscribe')">Subscribe</button>
+            <button type="button" onclick="get('datasource', 'unsubscribe')">Unsubscribe</button>
         </form>
     </div>
+
     <div>
-        <form method="post" action="/simulations/create" name="simulate">
+        <form method="post" action="/processors/create" name="processor">
             <label>
                 Id:
-                <input type="text" name="id" value="testrigsim">
+                <input type="text" name="id" value="fourier">
             </label>
             <label>
-                Datasource:
-                <input type="text" name="datasource" value="testrig">
+                Blueprint:
+                <input type="text" name="blueprint" value="fft">
             </label>
             <label>
-                Fmu:
-                <input type="text" name="fmu" value="testrig.fmu">
+                Source topic:
+                <input type="text" name="topic" value="0000">
             </label>
-            <div id="sim_inputs">
-                Input:
-                <label>
-                    Input reference:
-                    <input type="number" name="input_ref" value="0">
-                </label>
-                <label>
-                    Measurement reference:
-                    <input type="number" name="measurement_ref" value="7">
-                </label>
-                <label>
-                    Measurement proportion:
-                    <input type="number" name="measurement_proportion" value="0.001">
-                </label>
-            </div>
-            <div id="sim_outputs">
-                Outputs:
-                <label>
-                    Output reference:
-                    <input type="number" name="output_ref" value="2">
-                </label>
-                <label>
-                    Output reference:
-                    <input type="number" name="output_ref" value="3">
-                </label>
-            </div>
-            <button>Create</button>
+            <br>
+            <label>
+                Initialization parameters:
+                <br>
+                <textarea name="init_params" cols="60">{}</textarea>
+            </label>
+            <br>
+            <label>
+                Minimun input spacing:
+                <input type="text" name="min_input_spacing" value="0.001">
+            </label>
+            <label>
+                Minimun step spacing:
+                <input type="text" name="min_step_spacing" value="0.001">
+            </label>
+            <label>
+                Minimun output spacing:
+                <input type="text" name="min_output_spacing" value="0.001">
+            </label>
+            <br>
+            <button type="submit">Create</button>
         </form>
-        <span id="simulation"></span>
+
+        <form method="post" action="/processors/start" name="processor_start">
+            <label>
+                Id:
+                <input id="processor_id" type="text" name="id" value="fourier">
+            </label>
+            <br>
+            Inputs:
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Input reference</th>
+                    <th>Measurement reference</th>
+                    <th>Measurement proportion</th>
+                </tr>
+                </thead>
+                <tbody id="inputs">
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="3">
+                        <button type="button" onclick="addInput([])">+</button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            <br>
+            Outputs:
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Output reference</th>
+                </tr>
+                </thead>
+                <tbody id="outputs">
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td>
+                        <button type="button" onclick="addOutput([])">+</button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            <br>
+            <label>
+                Start parameters:
+                <br>
+                <textarea name="start_params" cols="60">{}</textarea>
+            </label>
+            <br>
+            <button type="submit">Start</button>
+            <button type="button" onclick="get('processor', 'stop')">Stop</button>
+            <button type="button" onclick="get('processor', 'subscribe')">Subscribe</button>
+            <button type="button" onclick="get('processor', 'unsubscribe')">Unsubscribe</button>
+        </form>
+        <form method="post" name="processor_outputs">
+            <label>
+                Outputs:
+                <input type="text" name="output_ref" value="all">
+            </label>
+            <button type="submit">Set</button>
+        </form>
     </div>
+
 </div>
 <hr>
-<div id="chartContainer" style="width: 100%"></div>
+<div>
+    <form name="subscribe">
+        <button type="button" onclick="update_topics()">Update</button>
+        <label>
+            Topics
+            <select class="topics" onchange="change_topic()">
+            </select>
+        </label>
+        <label>
+            Channels
+            <select class="channels" onchange="change_channel()" data-topic="0000">
+            </select>
+        </label>
+        <label>
+            Plot by time
+            <input type="checkbox" name="timeplot" onchange="setTimeplot()" checked>
+        </label>
+        <button>Subscribe</button>
+    </form>
+    <div id="chartContainer" style="width: 100%"></div>
+</div>
+
+<span id="delay"></span>
 <ul id="l"></ul>
 <span id="i">0</span>
 <script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
@@ -122,7 +206,7 @@
         {
             title: 'Displacement',
             yaxis: {
-                title: 'Displacement (m)'
+                title: 'Displacement (mm)'
             },
             xaxis: {
                 title: 'Timestamp'
@@ -131,34 +215,95 @@
         {responsive: true}
     );
 
-    function addSensor(name = '') {
-        sensors.insertAdjacentHTML('beforeend',
+    let topics = new Map();
+
+    function addInput([input_ref = 0, measurement_ref = 0, measurement_proportion = 0.0]) {
+        document.querySelector('#inputs').insertAdjacentHTML('beforeend',
             '<tr>' +
-            '<td><label><input type="text" name="output_name" value="' + name + '"></label></td>' +
+            '<td><button type="button" onclick="event.target.parentNode.parentNode.remove()">-</button></td>' +
+            htmlFormCell('number', 'input_ref', input_ref) +
+            htmlFormCell('number', 'measurement_ref', measurement_ref) +
+            htmlFormCell('text', 'measurement_proportion', measurement_proportion) +
+            '</tr>'
+        );
+    }
+
+    function htmlFormCell(type, name, value) {
+        return `<td><label><input type="${type}" name="${name}" value="${value}"></label></td>`;
+    }
+
+    [
+        [0, 0, 0.001]
+    ].forEach(addInput);
+
+    function addOutput(ref = 0) {
+        document.querySelector('#outputs').insertAdjacentHTML('beforeend',
+            '<tr>' +
+            '<td><button type="button" onclick="event.target.parentNode.parentNode.remove()">-</button></td>' +
+            htmlFormCell('number', 'output_ref', ref) +
             '</tr>'
         );
     }
 
     [
-        'Time 1 - default sample rate',
-        'Time 1 - slow sample rate',
-        'Time 1 - fast sample rate',
-        'Load [N]',
-        'Displacement [mm]',
-        'AccelerometerX',
-        '0 Degrees Transvers on Axle',
-        'Rosett +45 Degrees Along Axle',
-        'Rosett 90 Degrees Along Axle',
-        'Rosett -45 Degrees Along Axle',
-        'Radius +45 Degrees Along Axle',
-        'MX840A 0 hardware time default sample rate',
+        0
+    ].forEach(addOutput);
+
+    let sensorCount = 0;
+
+    function addSensor([name = '', used = true]) {
+        sensors.insertAdjacentHTML('beforeend',
+            '<tr>' +
+            '<td><label><input type="text" name="output_name" value="' + name + '"></label></td>' +
+            `<td><input type="checkbox" name="sensor_${sensorCount++}" ${used ? 'checked' : ''}/>` +
+            '</tr>'
+        );
+    }
+
+    [
+        ['Load [N]'],
+        ['Displacement [mm]'],
+        ['AccelerometerX'],
+        ['0 Degrees Transvers on Axle'],
+        ['Rosett +45 Degrees Along Axle'],
+        ['Rosett 90 Degrees Along Axle'],
+        ['Rosett -45 Degrees Along Axle'],
+        ['Radius +45 Degrees Along Axle'],
+        ['MX840A 0 hardware time default sample rate'],
     ].forEach(addSensor);
 
-    document.forms.namedItem('subscribe').addEventListener('submit', ajaxSubmit);
-    document.forms.namedItem('simulate').addEventListener('submit', ajaxSubmit);
+    function get(type, action) {
+        let id = document.querySelector(`#${type}_id`).value;
+        const e = event;
+        fetch(`/${type}s/${id}/${action}`)
+            .then(r => {
+                console.log(r);
+                e.target.parentElement.insertAdjacentText('afterend', ` | ${action}:${r.statusText} | `);
+                update_topics();
+            });
+    }
+
+    document.forms.namedItem('datasource').addEventListener('submit', sensorsSubmit);
+    document.forms.namedItem('processor').addEventListener('submit', ajaxSubmit);
+    document.forms.namedItem('processor_start').addEventListener('submit', ajaxSubmit);
+    document.forms.namedItem('processor_outputs').addEventListener('submit', outputsSubmit);
+    document.forms.namedItem('subscribe').addEventListener('submit', subscribe);
+
+    function sensorsSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        Array.from(formData).filter(([k]) => k.startsWith('sensor_')).map(([k]) => ['output_ref', k.slice(7)]).forEach(([k, v]) => formData.append(k, v));
+        fetch(event.target.action, {
+            method: 'POST',
+            body: formData
+        }).then(response =>
+            event.target.insertAdjacentHTML('afterend', response.statusText)
+        );
+    }
 
     function ajaxSubmit(event) {
         const formData = new FormData(event.target);
+        console.log(event.target.name);
         const request = new XMLHttpRequest();
         request.open("POST", event.target.action, true);
         request.onload = function () {
@@ -168,9 +313,74 @@
         event.preventDefault();
     }
 
+    function outputsSubmit(event) {
+        const formData = new FormData(event.target);
+        const request = new XMLHttpRequest();
+        const id = document.querySelector('#processor_id').value;
+        request.open("POST", `/processors/${id}/outputs`, true);
+        request.onload = function () {
+            event.target.insertAdjacentHTML('afterend', request.responseText);
+        };
+        request.send(formData);
+        event.preventDefault();
+    }
+
+    function update_topics() {
+        fetch('/topics/').then(response => {
+            response.json().then(topics => {
+                document.querySelectorAll('.topics').forEach(node => {
+                        const v = node.value;
+                        node.innerHTML = Object.entries(topics).reduce((accumulator, [topic, attr]) => {
+                                return accumulator + `<option value="${topic}">${attr.url}(${topic})</option>`
+                            }, ''
+                        );
+                        node.value = v;
+                        node.parentNode.parentNode.querySelector('.channels').setAttribute('data-topic', node.value)
+                        channels = topics[v].output_names;
+                    }
+                );
+
+                document.querySelectorAll('.channels').forEach(node => {
+                    node.innerHTML = topics[node.getAttribute('data-topic')].output_names
+                        .reduce((accumulator, currentValue, idx) => {
+                            return accumulator + `<option value="${idx}">${currentValue}</option>`
+                        }, '')
+                });
+
+            });
+        })
+    }
+
+    let selectedTopic = '0000';
+    let selectedChannel = 0;
+    let channels = [];
+
+    function change_topic() {
+        update_topics();
+        selectedTopic = event.target.value;
+        x_buffer = [];
+        y_buffer = [];
+        Plotly.restyle(graphContainer, {
+            y: [[]],
+            x: [[]]
+        })
+    }
+
+    function change_channel() {
+        selectedChannel = Number(event.target.value);
+    }
+
+    update_topics();
+
+    function subscribe(event) {
+        event.preventDefault();
+        fetch(`/topics/${event.target.querySelector('.topics').value}/subscribe`)
+    }
+
     const l = document.getElementById('l');
 
     const i = document.getElementById('i');
+    const delay = document.getElementById('delay');
 
     let pingInterval = null;
 
@@ -184,6 +394,21 @@
     // y_buffer.fill(0)
     let x_buffer = [];
     let y_buffer = [];
+
+    let timeplot = true;
+
+    function setTimeplot() {
+        timeplot = event.target.checked;
+        x_buffer = [];
+        y_buffer = [];
+        Plotly.restyle(graphContainer, {
+            y: [[]],
+            x: [[]]
+        })
+    }
+
+    const textDecoder = new TextDecoder("utf-8");
+
     function reconnect() {
         try {
             const ws = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port);
@@ -208,31 +433,41 @@
             let counter = 0;
             let tc = 0;
             const id_length = document.querySelector('#datasource_id').value.length;
+            let timestamp = 0;
             ws.onmessage = function (event) {
                 messageRecentlyReceived = true;
                 if (event.data.byteLength > 0) {
+                    const topic = textDecoder.decode(event.data.slice(0, 4));
                     const data = new Float64Array(event.data.slice(4));
                     // let x_buffer = []
                     // let y_buffer = []
-
-                    for (let i = 0; i < data.length; i += 13) {
-                        x_buffer.push(new Date(data[i]*1000));
-                        y_buffer.push(data[i + 6]);
-                        // buffer_position = ++buffer_position % buffer_size
-                        // x_buffer[buffer_position] = data[i+12]
-                        // y_buffer[buffer_position] = data[i+5]
-                        // displacements.x[0].push(new Date(
-                        //     (x_buffer.reduce((a, b) => a + b) / x_buffer.length) * 1000
-                        // ));
-                        // displacements.y[0].push(
-                        //     (y_buffer.reduce((a, b) => a + b) / y_buffer.length)
-                        // );
-                        // buffer_position = 0;
-                        ++tc;
-                        // if (++tc > 5) {
-                        //     Plotly.extendTraces(graphContainer, {y: [[data[i + 5]]], x: [[new Date(data[i + 12]*1000)]]}, [0], 1000);
-                        //     tc = 0
-                        // }
+                    if (topic !== selectedTopic) return;
+                    if (channels.length <= 0) return;
+                    if (timeplot) {
+                        for (let i = 0; i < data.length; i += channels.length + 1) {
+                            // x_buffer.push(new Date(data[i] * 1000));
+                            timestamp = data[i]*1000;
+                            x_buffer.push(new Date(timestamp));
+                            y_buffer.push(data[i + selectedChannel + 1]);
+                            // buffer_position = ++buffer_position % buffer_size
+                            // x_buffer[buffer_position] = data[i+12]
+                            // y_buffer[buffer_position] = data[i+5]
+                            // displacements.x[0].push(new Date(
+                            //     (x_buffer.reduce((a, b) => a + b) / x_buffer.length) * 1000
+                            // ));
+                            // displacements.y[0].push(
+                            //     (y_buffer.reduce((a, b) => a + b) / y_buffer.length)
+                            // );
+                            // buffer_position = 0;
+                            ++tc;
+                            // if (++tc > 5) {
+                            //     Plotly.extendTraces(graphContainer, {y: [[data[i + 5]]], x: [[new Date(data[i + 12]*1000)]]}, [0], 1000);
+                            //     tc = 0
+                            // }
+                        }
+                    } else {
+                        x_buffer = channels.map((c, i) => c);
+                        y_buffer = channels.map((c, i) => data[i + 1]);
                     }
                     // Plotly.extendTraces(graphContainer, {y: [y_buffer], x: [x_buffer]}, [0], 1000);
                     // displacements.x[0] = x_buffer;
@@ -241,6 +476,7 @@
                     // newli.innerText = data.toString(); //new Float32Array(event.data);
                     // l.insertAdjacentElement('afterbegin', newli);
                     i.innerHTML = '<strong>' + ++counter + "(" + tc + ")" + ":</strong><br>" + data;
+                    delay.innerHTML = 'delay: ' + (Date.now() - timestamp).toFixed(0) + 'ms'
                 } else {
                     console.log('pong')
                 }
@@ -252,6 +488,7 @@
     }
 
     window.requestAnimationFrame(asdf);
+
     function asdf() {
         // displacements.x[0] = Array.from(x_buffer.subarray(0, buffer_position)) + Array.from(x_buffer.subarray(buffer_position));
         // displacements.y[0] = Array.from(y_buffer.subarray(0, buffer_position)) + Array.from(y_buffer.subarray(buffer_position));
@@ -269,13 +506,21 @@
         //     }, [0], 5000);
         //     last_buffer_position = 0;
         // }
-
-        Plotly.extendTraces(graphContainer, {
-            y: [y_buffer],
-            x: [x_buffer]
-        }, [0], 10000);
-        x_buffer = [];
-        y_buffer = [];
+        if (y_buffer.length > 1) {
+            if (timeplot) {
+                Plotly.extendTraces(graphContainer, {
+                    y: [y_buffer],
+                    x: [x_buffer]
+                }, [0], 100000);
+            } else {
+                Plotly.restyle(graphContainer, {
+                    y: [y_buffer],
+                    x: [x_buffer]
+                })
+            }
+            x_buffer = [];
+            y_buffer = [];
+        }
         window.requestAnimationFrame(asdf)
     }
 </script>

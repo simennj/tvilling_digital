@@ -3,5 +3,5 @@ venv/
 *.fmu
 *.zip
 /files/*
-!/files/filters/
+!/files/blueprints/
 .vscode/

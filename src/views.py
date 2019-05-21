@@ -1,11 +1,10 @@
-import asyncio
 import logging
 
 from aiohttp import web, WSMessage
 from aiohttp_session import get_session
 
 from src.clients.models import Client
-from src.utils import RouteTableDefDocs
+from src.utils import RouteTableDefDocs, try_get, get_client
 
 routes = RouteTableDefDocs()
 
@@ -67,3 +66,18 @@ async def index(request: web.Request):
         with open('html/wsprint.html', 'r') as file:
             body = file.read()
         return web.Response(body=body, content_type='text/html')
+
+
+@routes.get('/topics/', name='topics')
+async def topics(request: web.Request):
+    return web.json_response(request.app['topics'])
+
+
+@routes.get('/topics/{id}/subscribe', name='subscribe')
+async def subscribe(request: web.Request):
+    topic = request.match_info['id']
+    client = await get_client(request)
+    if topic not in request.app['topics']:
+        raise web.HTTPNotFound()
+    request.app['subscribers'][topic].add(client)
+    raise web.HTTPAccepted()

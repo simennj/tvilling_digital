@@ -49,9 +49,17 @@ class RouteTableDefDocs(web.RouteTableDef):
         return inner
 
 
-def try_get(post, key):
+def try_get(post, key, parser=None):
     try:
-        return post[key]
+        value = post[key]
+        if parser:
+            try:
+                return parser(post[key])
+            except ValueError:
+                raise web.HTTPBadRequest(
+                    reason=f'The value {value} from {key} was not parsable as {parser.__name__}'
+                )
+        return value
     except KeyError:
         raise web.HTTPUnprocessableEntity(reason=f'{key} is missing')
 
@@ -66,7 +74,7 @@ async def try_get_all(post, key, parser=None):
             reason=f'Attempted to get {key} from request and failed'
         )
     except ValueError:
-        raise web.HTTPUnprocessableEntity(
+        raise web.HTTPBadRequest(
             reason=f'A value from {key} was not parsable as {parser.__name__}'
         )
 
@@ -79,6 +87,16 @@ def try_get_validate(post, key):
     value = try_get(post, key)
     if not validator.match(value):
         raise web.HTTPUnprocessableEntity(reason=f'invalid {key} value, must match {validator_string}')
+    return value
+
+
+topic_validator = re.compile(r'\A[0-9]{0,4}\Z')
+
+
+def try_get_topic(post):
+    value = try_get(post, 'topic')
+    if not topic_validator.match(value):
+        raise web.HTTPUnprocessableEntity(reason=f'invalid topic value')
     return value
 
 

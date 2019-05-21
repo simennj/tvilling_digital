@@ -123,7 +123,7 @@ class Simulation:
             model=os.path.abspath(os.path.join(fmu_dir, fmu)),
             topic= self.topic,
             source_topic=datasource.topic,
-            source_format=datasource.byte_format,
+            source_format=datasource.input_byte_format,
             sim_id=sim_id,
             sim_root_dir=sim_root_dir,
             kafka_server=kafka_server,
