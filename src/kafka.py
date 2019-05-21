@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import struct
 from typing import Dict, List
 
 import aiokafka
@@ -29,9 +30,11 @@ async def consume_from_kafka(app: web.Application):
                 await asyncio.sleep(.01)
                 messages: Dict[aiokafka.TopicPartition, List[aiokafka.ConsumerRecord]] = await consumer.getmany()
                 for topic, topic_messages in messages.items():
+                    print(topic_messages[0].timestamp - struct.unpack_from('<d', topic_messages[0].value)[0]*1000)
                     for subscriber in app['subscribers'][topic.topic]:
                         await subscriber.receive(
-                            topic.topic.encode() + b''.join(message.value for message in topic_messages)
+                            topic.topic,
+                            b''.join(message.value for message in topic_messages)
                         )
             except KafkaConnectionError as e:
                 logger.exception('Lost connection to kafka server, waiting 10 seconds before retrying')

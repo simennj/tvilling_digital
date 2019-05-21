@@ -4,7 +4,7 @@ import struct
 from dataclasses import dataclass, field
 from typing import Tuple, List, Optional
 
-import aiokafka
+from kafka import KafkaProducer
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +52,8 @@ def generate_catman_outputs(output_names: List[str], output_refs, single: bool =
 
 class UdpReceiver(asyncio.DatagramProtocol):
 
-    def __init__(self, loop: asyncio.AbstractEventLoop, kafka_addr):
-        self.loop = loop
-        self.producer = aiokafka.AIOKafkaProducer(
-            loop=self.loop, bootstrap_servers=kafka_addr
-        )
+    def __init__(self, kafka_addr):
+        self.producer = KafkaProducer(bootstrap_servers=kafka_addr)
         self._addr_to_source = {}
         self._sources = {}
         self.buffer = bytearray()
@@ -98,10 +95,10 @@ class UdpReceiver(asyncio.DatagramProtocol):
         return self._sources.copy()
 
     def connection_made(self, transport: asyncio.transports.BaseTransport) -> None:
-        self.loop.create_task(self.producer.start())
+        pass
 
     def connection_lost(self, exc: Optional[Exception]) -> None:
-        self.loop.create_task(self.producer.stop())
+        pass
 
     def error_received(self, exc: Exception) -> None:
         logger.exception('error in datasource: %s', exc)
@@ -119,7 +116,7 @@ class UdpReceiver(asyncio.DatagramProtocol):
             #     data[i:i + time_bytes_start + 8] = data[i + time_bytes_start:i + time_bytes_start + 8] + data[i:i + time_bytes_start]
             self.buffer += data
             if len(self.buffer) > len(source.output_names) * 100:
-                self.loop.create_task(self.producer.send(topic=source.topic, value=self.buffer))
+                self.producer.send(topic=source.topic, value=self.buffer)
                 self.buffer = bytearray()
         else:
             logger.debug('%s attempted to send udp data but was not on the list of running datasources', addr)

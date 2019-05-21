@@ -30,7 +30,7 @@ async def start_background_tasks(app):
     loop = asyncio.get_event_loop()
     app['kafka'] = loop.create_task(consume_from_kafka(app))
     app['udp_transport'], app['datasources'] = await loop.create_datagram_endpoint(
-        protocol_factory=lambda: UdpReceiver(loop, app['settings'].KAFKA_SERVER),
+        protocol_factory=lambda: UdpReceiver(app['settings'].KAFKA_SERVER),
         local_addr=app['settings'].UDP_ADDR
     )
 
