@@ -98,6 +98,10 @@ def processor_process(
         start_time=next_output_time,
         **start_params
     )
+    if hasattr(processor_instance, "get_time"):
+        processor_custom_time = True
+    else:
+        processor_custom_time = False
 
     consumer = kafka.KafkaConsumer(
         source_topic,
@@ -142,6 +146,8 @@ def processor_process(
                         next_input_time = current_time + min_step_spacing
                     if next_output_time <= current_time or math.isclose(next_output_time, current_time, rel_tol=1e-15):
                         outputs = processor_instance.get_outputs(output_refs)
+                        if processor_custom_time:
+                            current_time = processor_instance.get_time() + start_time
                         output_buffer += struct.pack(byte_format, current_time, *outputs)
                         if len(output_buffer) > 80 * len(output_refs):
                             producer.send(topic=topic, value=output_buffer)
