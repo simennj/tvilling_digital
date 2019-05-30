@@ -52,6 +52,9 @@ def processor_process(
     except TypeError as e:
         connection.send({'type': 'error', 'value': e})
         return
+    except ValueError as e:
+        connection.send({'type': 'error', 'value': e})
+        return
 
     if hasattr(processor_instance, 'outputs'):
         outputs = processor_instance.outputs
@@ -64,6 +67,10 @@ def processor_process(
     connection.send({'type': 'initialized', 'value': {
         'outputs': outputs,
         'inputs': inputs,
+        'matrix_outputs':
+            processor_instance.matrix_outputs
+            if hasattr(processor_instance, 'matrix_outputs')
+            else []
     }})
 
     byte_format = '<d'
@@ -174,6 +181,7 @@ class Processor:
         self.processor_id = processor_id
         self.blueprint_id = blueprint_id
         self.init_params = init_params
+        self.start_params = []
         self.topic = topic
         self.source_topic = source_topic
         self.source_format = source_format
@@ -223,12 +231,14 @@ class Processor:
             }
         elif result['type'] == 'initialized':
             self.outputs = result['value']['outputs']
+            self.matrix_outputs = result['value']['matrix_outputs']
             self.inputs = result['value']['inputs']
             self.running = True
             return {
                 'url': '/processors/' + self.processor_id,
                 'input_names': [i.name for i in self.inputs],
                 'output_names': [self.outputs[ref].name for ref in self.output_refs],
+                'matrix_outputs': self.matrix_outputs,
                 'available_output_names': [o.name for o in self.outputs],
                 'byte_format': self.byte_format,
                 'started': False,
@@ -241,6 +251,7 @@ class Processor:
             measurement_proportions=measurement_proportions
         )
         self._set_outputs(output_refs)
+        self.start_params = start_params
         self.connection.send({
             'type': 'start',
             'value': {
@@ -255,6 +266,7 @@ class Processor:
             'url': '/processors/' + self.processor_id,
             'input_names': [i.name for i in self.inputs],
             'output_names': [self.outputs[ref].name for ref in self.output_refs],
+            'matrix_outputs': self.matrix_outputs,
             'available_output_names': [o.name for o in self.outputs],
             'byte_format': self.byte_format,
             'started': True,
