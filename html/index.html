@@ -475,7 +475,7 @@
                     // let newli = document.createElement('li');
                     // newli.innerText = data.toString(); //new Float32Array(event.data);
                     // l.insertAdjacentElement('afterbegin', newli);
-                    i.innerHTML = '<strong>' + ++counter + "(" + tc + ")" + ":</strong><br>" + data;
+                    i.innerHTML = '<strong>' + ++counter + "(" + tc + ")" + ":</strong><br>" + data.join(", ");
                     delay.innerHTML = 'delay: ' + (Date.now() - timestamp).toFixed(0) + 'ms'
                 } else {
                     console.log('pong')
