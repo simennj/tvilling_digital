@@ -14,8 +14,15 @@ class Client:
         self.buffers[topic] += bytes
         if len(self.buffers[topic]) > 500:
             for ws in self._websocket_connections:
-                await ws.send_bytes(topic.encode() + self.buffers[topic])
+                try:
+                    await ws.send_bytes(topic.encode() + self.buffers[topic])
+                except ConnectionResetError:
+                    break
+            else:
+                self.buffers[topic] = bytearray()
+                return
             self.buffers[topic] = bytearray()
+            await self.remove_websocket_connection(ws)
 
     async def add_websocket_connection(self, ws: web.WebSocketResponse):
         self._websocket_connections.add(ws)
