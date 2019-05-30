@@ -27,10 +27,8 @@ async def consume_from_kafka(app: web.Application):
         consumer.subscribe(pattern='.*')
         while True:
             try:
-                await asyncio.sleep(.01)
-                messages: Dict[aiokafka.TopicPartition, List[aiokafka.ConsumerRecord]] = await consumer.getmany()
+                messages: Dict[aiokafka.TopicPartition, List[aiokafka.ConsumerRecord]] = await consumer.getmany(timeout_ms=1000)
                 for topic, topic_messages in messages.items():
-                    print(topic_messages[0].timestamp - struct.unpack_from('<d', topic_messages[0].value)[0]*1000)
                     for subscriber in app['subscribers'][topic.topic]:
                         await subscriber.receive(
                             topic.topic,
