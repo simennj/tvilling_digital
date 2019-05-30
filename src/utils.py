@@ -12,8 +12,8 @@ from aiohttp_session import Session, get_session
 def make_serializable(o):
     # if hasattr(o, 'asdict'):
     #     return o.asdict()
-    # if hasattr(o, 'dict_repr'):
-    #     return o.dict_repr()
+    if hasattr(o, 'dict_repr'):
+        return o.dict_repr()
     if hasattr(o, '__dict__'):
         return {k: v for k, v in o.__dict__.items() if not k.startswith('_')}
     return str(o)
