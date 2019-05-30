@@ -1,5 +1,8 @@
+import asyncio
 import logging
+import os
 
+import aiokafka
 from aiohttp import web, WSMessage
 from aiohttp_session import get_session
 
@@ -30,10 +33,12 @@ async def index(request: web.Request):
     A WebSocket request will initiate a websocket connection making it possible to retrieve measurement and simulation data.
 
     Available endpoints are
-    - /simulations/ for running simulations
     - /datasources/ for measurement data sources
-    - /client/ for client information
-    - /fmus/ for FMUs available for simulation
+    - /processors/ for running processors on the data
+    - /blueprints/ for the blueprints used to create processors
+    - /fmus/ for available FMUs (for the fmu blueprint)
+    - /fmus/ for available models (for the fedem blueprint)
+    - /topics/ for all available data sources (datasources and processors)
     """
 
     session = await get_session(request)
@@ -63,18 +68,38 @@ async def index(request: web.Request):
             await client.remove_websocket_connection(ws)
             await ws.close()
     else:
-        with open('html/wsprint.html', 'r') as file:
+        with open('html/index.html', 'r') as file:
             body = file.read()
         return web.Response(body=body, content_type='text/html')
 
 
 @routes.get('/topics/', name='topics')
 async def topics(request: web.Request):
+    """Lists the available data sources for plotting or processors
+
+    Append the id of a topic to get details about only that topic
+    Append the id of a topic and /subscribe to subscribe to a topic
+    Append the id of a topic and /unsubscribe to unsubscribe to a topic
+    """
     return web.json_response(request.app['topics'])
+
+
+@routes.get('/topics/{id}', name='topics_detail')
+async def topics_detail(request: web.Request):
+    """Show a single topic
+
+    Append /subscribe to subscribe to the topic
+    Append /unsubscribe to unsubscribe to the topic
+    """
+    topic = request.match_info['id']
+    if topic not in request.app['topics']:
+        raise web.HTTPNotFound()
+    return web.json_response(request.app['topics'][topic])
 
 
 @routes.get('/topics/{id}/subscribe', name='subscribe')
 async def subscribe(request: web.Request):
+    """Subscribe to the given topic"""
     topic = request.match_info['id']
     client = await get_client(request)
     if topic not in request.app['topics']:
