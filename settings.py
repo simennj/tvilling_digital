@@ -13,6 +13,7 @@ KAFKA_SERVER = 'localhost:9094'
 # DATA_SOURCE_NAME = 'Driver=SQLite;Database=sqlite.db'
 
 FMU_DIR = 'files/fmus'
+MODEL_DIR = 'files/models'
 FILTER_DIR = 'files/filters'
 SIMULATION_DIR = 'files/simulations'
 DATASOURCE_DIR = 'files/datasources'
