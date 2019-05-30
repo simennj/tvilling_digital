@@ -28,25 +28,6 @@ async def processor_list(request: web.Request):
     return web.json_response(processors, dumps=dumps)
 
 
-@routes.get('/processors/{id}', name='processor_detail')
-async def processor_detail(request: web.Request):
-    """Get detailed information for the processor with the given id
-
-    """
-
-    processor_id = request.match_info['id']
-    if processor_id in request.app['processors']:
-        return web.json_response(request.app['processors'][processor_id], dumps=dumps)
-    if processor_id not in os.listdir(request.app['settings'].PROCESSOR_DIR):
-        raise web.HTTPNotFound()
-    return web.json_response(
-        {'processor_id': processor_id, 'running': False},
-        dumps=dumps
-    )
-    # with open(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id)) as f:
-    #     return web.json_response(text=f.read(), dumps=dumps)
-
-
 @routes.post('/processors/create', name='processor_create')
 async def processor_create(request: web.Request):
     """Create a new processor from post request.
@@ -148,6 +129,25 @@ async def processor_start(request: web.Request):
     raise web.HTTPAccepted()
 
 
+@routes.get('/processors/{id}', name='processor_detail')
+async def processor_detail(request: web.Request):
+    """Get detailed information for the processor with the given id
+
+    """
+
+    processor_id = request.match_info['id']
+    if processor_id in request.app['processors']:
+        return web.json_response(request.app['processors'][processor_id], dumps=dumps)
+    if processor_id not in os.listdir(request.app['settings'].PROCESSOR_DIR):
+        raise web.HTTPNotFound()
+    return web.json_response(
+        {'processor_id': processor_id, 'running': False},
+        dumps=dumps
+    )
+    # with open(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id)) as f:
+    #     return web.json_response(text=f.read(), dumps=dumps)
+
+
 @routes.get('/processors/{id}/subscribe', name='processor_subscribe')
 async def processor_subscribe(request: web.Request):
     """Subscribe to the processor with the given id"""
@@ -204,7 +204,7 @@ async def processor_inputs_update(request: web.Request):
         - input_ref: reference values to the inputs to be used
         - measurement_ref: reference values to the measurement inputs to be used for the inputs.
           Must be in the same order as input_ref.
-        - measurement_proportions: scale to be used on measurement values before inputting them.
+        - measurement_proportion: scale to be used on measurement values before inputting them.
           Must be in the same order as input_ref.
     """
 
