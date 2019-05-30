@@ -18,6 +18,7 @@ async def processor_list(request: web.Request):
 
     Append a processor id to get more information about a listed processor.
     Append /create to create a new processor instance
+    Append /clear to delete stopped processors
     """
 
     created_processors = request.app['processors']
@@ -87,6 +88,16 @@ async def processor_create(request: web.Request):
     raise web.HTTPCreated(body=dumps(init_results), content_type='application/json')
 
 
+@routes.get('/processors/clear', name='processors_clear')
+async def processors_clear(request: web.Request):
+    """Delete all stopped processors"""
+
+    for processor_id in os.listdir(request.app['settings'].PROCESSOR_DIR):
+        if processor_id not in request.app['processors']:
+            shutil.rmtree(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id))
+    raise web.HTTPAccepted()
+
+
 def start_processor(app, processor_instance, **kwargs):
     start_results = processor_instance.start(**kwargs)
     app['topics'][processor_instance.topic] = start_results
@@ -136,6 +147,12 @@ async def processor_start(request: web.Request):
 async def processor_detail(request: web.Request):
     """Get detailed information for the processor with the given id
 
+    Append /subscribe to subscribe to the processor
+    Append /unsubscribe to unsubscribe to the processor
+    Append /stop to stop the processor
+    Append /delete to delete the processor
+    Append /outputs to get the outputs of the processor
+    Append /inputs to get the inputs of the processor
     """
 
     processor_id = request.match_info['id']
@@ -173,6 +190,20 @@ async def processor_stop(request: web.Request):
     request.app['processors'][processor_id].stop()
     del request.app['topics'][request.app['processors'][processor_id].topic]
     del request.app['processors'][processor_id]
+    raise web.HTTPOk()
+
+
+@routes.get('/processors/{id}/delete', name='processor_delete')
+async def processor_delete(request: web.Request):
+    """Delete the processor with the given id."""
+    processor_id = request.match_info['id']
+    if processor_id in request.app['processors']:
+        raise web.HTTPUnprocessableEntity(
+            text=f'Running processor with id {processor_id} must be stopped before delition'
+        )
+    if processor_id not in os.listdir(request.app['settings'].PROCESSOR_DIR):
+        raise web.HTTPNotFound()
+    shutil.rmtree(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id))
     raise web.HTTPOk()
 
 
