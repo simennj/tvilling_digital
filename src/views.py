@@ -33,6 +33,7 @@ async def index(request: web.Request):
     A WebSocket request will initiate a websocket connection making it possible to retrieve measurement and simulation data.
 
     Available endpoints are
+    - /client for information about the clients websocket connections
     - /datasources/ for measurement data sources
     - /processors/ for running processors on the data
     - /blueprints/ for the blueprints used to create processors
