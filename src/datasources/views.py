@@ -28,15 +28,6 @@ async def datasource_list(request: web.Request):
     return web.json_response(sources, dumps=dumps)
 
 
-async def create_datasource(source_dir, source_id, addr, input_byte_format, input_names, output_refs, time_index):
-    datasource = UdpDatasource(addr, input_byte_format, input_names, output_refs, time_index)
-    path = os.path.join(source_dir, source_id)
-    # if os.path.exists(path):
-    #     raise web.HTTPUnprocessableEntity(reason=f'datasource with id {source_id} already exists')
-    with open(path, 'w') as f:
-        f.write(dumps(datasource))
-
-
 @routes.post('/datasources/create', name='datasource_create')
 async def datasource_create(request: web.Request):
     """Create a new datasource from post request.
@@ -84,15 +75,10 @@ async def datasource_create(request: web.Request):
     except IndexError:
         raise web.HTTPBadRequest(reason=f'time_index ({time_index})  is out of range (>= {len(byte_format)-2})')
     try:
-        await create_datasource(
-            request.app['settings'].DATASOURCE_DIR,
-            source_id,
-            addr,
-            byte_format,
-            output_names,
-            output_refs,
-            time_index
-        )
+        datasource = UdpDatasource(addr, byte_format, output_names, output_refs, time_index)
+        path = os.path.join(request.app['settings'].DATASOURCE_DIR, source_id)
+        with open(path, 'w') as f:
+            f.write(dumps(datasource))
     except struct.error:
         raise web.HTTPBadRequest(reason=f'Invalid byte format ({byte_format})')
     except IndexError:
@@ -119,6 +105,10 @@ async def datasource_detail(request: web.Request):
 
 
 def try_get_source(app, topic):
+    """Attempt to get the datasource sending to the given topic
+
+    Raises an HTTPNotFound error if not found.
+    """
     try:
         source = app['datasources'].get_source(topic)
     except KeyError:

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class UdpDatasource:
-    """Class for describing an udp datasource"""
+    """Represents a single UDP datasource"""
     addr: Tuple[str, int]
     input_byte_format: str
     input_names: List[str]
@@ -38,7 +38,7 @@ class UdpDatasource:
 
 def generate_catman_outputs(output_names: List[str], output_refs, single: bool = False) -> Tuple[
     List[str], List[int], str]:
-    """
+    """Generate ouput setup for a datasource that is using the Catman software
 
     :param single: true if the data from Catman is single precision (4 bytes each)
     :param output_names: a list of the names of the input data
@@ -51,8 +51,13 @@ def generate_catman_outputs(output_names: List[str], output_refs, single: bool =
 
 
 class UdpReceiver(asyncio.DatagramProtocol):
+    """Handles all UDP datasources"""
 
-    def __init__(self, kafka_addr):
+    def __init__(self, kafka_addr: str):
+        """Initializes the UdpReceiver with a kafka producer
+
+        :param kafka_addr: the address that will be used to bootstrap kafka
+        """
         self.producer = KafkaProducer(bootstrap_servers=kafka_addr)
         self._addr_to_source = {}
         self._sources = {}
@@ -67,6 +72,16 @@ class UdpReceiver(asyncio.DatagramProtocol):
                    output_refs: List[int],
                    time_index: int
                    ) -> None:
+        """Creates a new datasource object and adds it to sources, overwriting if necessary
+
+        :param source_id: the id to use for the datasource
+        :param addr: the address the datasource will send from
+        :param topic: the topic the data will be put on
+        :param input_byte_format: the byte_format of the data that will be received
+        :param input_names: the names of the values in the data that will be received
+        :param output_refs: the indices of the values that will be transmitted to the topic
+        :param time_index: the index of the value that represents the time of the data
+        """
         source = UdpDatasource(
             input_byte_format=input_byte_format,
             input_names=input_names,
@@ -92,6 +107,7 @@ class UdpReceiver(asyncio.DatagramProtocol):
         return self._sources[source_id]
 
     def get_sources(self):
+        """Returns a list of the current sources"""
         return self._sources.copy()
 
     def connection_made(self, transport: asyncio.transports.BaseTransport) -> None:
@@ -104,16 +120,14 @@ class UdpReceiver(asyncio.DatagramProtocol):
         logger.exception('error in datasource: %s', exc)
 
     def datagram_received(self, raw_data: bytes, addr: Tuple[str, int]) -> None:
+        """Filters, transforms and buffers incoming packets before sending it to kafka"""
         if addr in self._addr_to_source:
             source: UdpDatasource = self._addr_to_source[addr]
             data = bytearray(source.output_byte_count * (len(raw_data) // source.input_byte_count))
             for i, msg in enumerate(struct.iter_unpack(source.input_byte_format, raw_data)):
-                data[i:i + source.output_byte_count] = struct.pack(source.byte_format, msg[source.time_index],
-                                                                   *[msg[ref] for ref in source.output_refs])
-            # time_bytes_start = source.time_bytes_start
-            # data = bytearray(raw_data)
-            # for i in range(0, len(data), source.msg_bytes):
-            #     data[i:i + time_bytes_start + 8] = data[i + time_bytes_start:i + time_bytes_start + 8] + data[i:i + time_bytes_start]
+                data[i:i + source.output_byte_count] = struct.pack(
+                    source.byte_format, msg[source.time_index], *[msg[ref] for ref in source.output_refs]
+                )
             self.buffer += data
             if len(self.buffer) > len(source.output_names) * 100:
                 self.producer.send(topic=source.topic, value=self.buffer)
