@@ -1,6 +1,6 @@
 import json
-import json
 import os
+import shutil
 from json import JSONDecodeError
 from threading import Thread
 
@@ -20,9 +20,12 @@ async def processor_list(request: web.Request):
     Append /create to create a new processor instance
     """
 
-    running_processors = request.app['processors'].keys()
+    created_processors = request.app['processors']
     processors = {
-        s: s in running_processors
+        s: {
+            'created': s in created_processors,
+            'running': s in created_processors and created_processors[s].running
+        }
         for s in os.listdir(request.app['settings'].PROCESSOR_DIR)
     }
     return web.json_response(processors, dumps=dumps)
