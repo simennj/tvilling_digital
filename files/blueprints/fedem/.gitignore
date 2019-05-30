@@ -1,0 +1,4 @@
+# Gitignore fedem code and applications owned by fedem.
+# fedemdll and fedemgui has to be retrieved from fedem for the fedem blueprint to work.
+/fedemdll
+/fedemgui

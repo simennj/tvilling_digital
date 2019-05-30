@@ -11,7 +11,7 @@ class P:
     input_names = ('measurement',)
     output_names = ('filtered',)
 
-    def __init__(self, sample_spacing, buffer_size, cutoff_frequency, btype='hp', order=10):
+    def __init__(self, sample_spacing=.01, buffer_size=500, cutoff_frequency=10, btype='hp', order=10):
         """
         @startuml
         simen --> master
@@ -21,13 +21,14 @@ class P:
         :param window: the amount of samples to be used for each calculation
         """
         self.t = 0
-        self.sample_spacing = sample_spacing
-        self.buffer_size = buffer_size
-        self.buffers = np.zeros((3, self.buffer_size))
+        self.sample_spacing = float(sample_spacing)
+        self.buffer_size = int(buffer_size)
+        self.buffers = np.zeros((2, self.buffer_size))
+        self.time_buffers = np.zeros((2, self.buffer_size))
         self.current_buffer = 0
-        self.output_buffer = np.zeros(buffer_size)
+        self.output_buffer = np.zeros(self.buffer_size)
         self.index = -1
-        self.sos = si.butter(order, cutoff_frequency, btype, fs=1 / sample_spacing, output='sos')
+        self.sos = si.butter(int(order), float(cutoff_frequency), btype, fs=1 / self.sample_spacing, output='sos')
         self.last_value = 0
 
     def start(self, start_time):
@@ -40,6 +41,9 @@ class P:
     def get_outputs(self, output_refs: List[int]):
         if len(output_refs) == 1:
             return [self.output_buffer[self.index]]
+
+    def get_time(self):
+        return self.time_buffers[self.current_buffer, self.index]
 
     def step(self, t):
         if self.t <= self.sample_spacing and t > 0:
@@ -58,3 +62,4 @@ class P:
                 self.index = 0
                 self.current_buffer = next_buffer
             self.buffers[self.current_buffer, self.index] = self.last_value
+            self.time_buffers[self.current_buffer, self.index] = self.t

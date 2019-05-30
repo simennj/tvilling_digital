@@ -45,7 +45,7 @@ def processor_process(
     next_output_time = 0
     try:
         processor_instance = SourceFileLoader(
-            'main', os.path.join(blueprint_path, 'main.py')
+            os.path.basename(blueprint_path), os.path.join(blueprint_path, '__init__.py')
         ).load_module().P(
             **init_params
         )
