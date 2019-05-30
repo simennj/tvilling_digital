@@ -106,3 +106,20 @@ async def subscribe(request: web.Request):
         raise web.HTTPNotFound()
     request.app['subscribers'][topic].add(client)
     raise web.HTTPAccepted()
+
+
+@routes.get('/topics/{id}/unsubscribe', name='unsubscribe')
+async def unsubscribe(request: web.Request):
+    """Unsubscribe to the given topic"""
+    topic = request.match_info['id']
+    client = await get_client(request)
+    if topic not in request.app['topics']:
+        raise web.HTTPNotFound()
+    request.app['subscribers'][topic].discard(client)
+    raise web.HTTPAccepted()
+
+
+@routes.get('/models/', name='models')
+async def models(request: web.Request):
+    """List available models for the fedem blueprint"""
+    return web.json_response(os.listdir(request.app['settings'].MODEL_DIR))
