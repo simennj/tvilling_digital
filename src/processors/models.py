@@ -228,7 +228,7 @@ class Processor:
     def init_results(self):
         try:
             result = self.connection.recv()
-        except BrokenPipeError as e:
+        except EOFError:
             result = {'type': 'error', 'value': 'The processor crashed on initialization'}
         if result['type'] == 'error':
             return {
