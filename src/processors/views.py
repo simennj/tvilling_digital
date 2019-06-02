@@ -120,9 +120,14 @@ def get_initialization_results(app, processor_instance):
 async def processors_clear(request: web.Request):
     """Delete data from all processors that are not running"""
 
-    for processor_id in os.listdir(request.app['settings'].PROCESSOR_DIR):
+    processor_ids = (p[:-5] for p in os.listdir(request.app['settings'].PROCESSOR_DIR) if p[-5:] == '.json')
+    for processor_id in processor_ids:
         if processor_id not in request.app['processors']:
-            shutil.rmtree(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id))
+            try:
+                shutil.rmtree(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id))
+                os.remove(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json'))
+            except:
+                pass
     raise web.HTTPAccepted()
 
 
