@@ -387,8 +387,8 @@ class Processor:
             self.actual_output_refs = [self.outputs[ref].valueReference for ref in output_refs]
         self.byte_format = '<' + 'd' * (len(self.output_refs) + 1)
 
-    def stop(self):
-        """Attempts to stop the process nicely before killing it"""
+    async def stop(self):
+        """Attempts to stop the process nicely, killing it otherwise"""
         try:
             self.connection.send({'type': 'stop', 'value': ''})
         except BrokenPipeError:
@@ -396,5 +396,9 @@ class Processor:
         except EOFError:
             pass
         finally:
-            self.process.join(5)
-            self.process.kill()
+            i = 0
+            while self.process.is_alive() and i < 50:
+                await asyncio.sleep(.1)
+                i += 1
+            if self.process.is_alive():
+                self.process.kill()
