@@ -14,7 +14,6 @@ KAFKA_SERVER = 'localhost:9094'
 
 FMU_DIR = 'files/fmus'
 MODEL_DIR = 'files/models'
-FILTER_DIR = 'files/filters'
 SIMULATION_DIR = 'files/simulations'
 DATASOURCE_DIR = 'files/datasources'
 BLUEPRINT_DIR = 'files/blueprints'

@@ -13,9 +13,7 @@ from src.clients import views as client_views
 from src.clients.models import Client
 from src.datasources import views as datasource_views
 from src.datasources.models import UdpReceiver
-from src.filters.models import Filter
 from src.fmus import views as fmu_views
-from src.filters import views as filter_views
 from src.processors import views as processor_views
 from src.blueprints import views as blueprints_views
 from src.kafka import consume_from_kafka
@@ -54,7 +52,6 @@ def init_app(settings) -> web.Application:
     app.router.add_routes(datasource_views.routes)
     app.router.add_routes(client_views.routes)
     app.router.add_routes(fmu_views.routes)
-    app.router.add_routes(filter_views.routes)
     app.router.add_routes(processor_views.routes)
     app.router.add_routes(blueprints_views.routes)
 
@@ -73,7 +70,6 @@ def init_app(settings) -> web.Application:
     # TODO: make usable over multiple application instances (scaling)?
     app['clients']: Dict[str, Client] = {}
     app['simulations']: Dict[str, Simulation] = {}
-    app['filters']: Dict[str, Filter] = {}
     app['processors']: Dict[str, Processor] = {}
     app['subscribers'] = defaultdict(set)
     app['topics']: Dict[str, Dict] = {}
