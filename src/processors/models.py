@@ -3,7 +3,7 @@ import multiprocessing
 import os
 import shutil
 import struct
-import time
+from dataclasses import dataclass
 from importlib.machinery import SourceFileLoader
 from multiprocessing.connection import Connection
 
@@ -65,8 +65,9 @@ def processor_process(
     else:
         inputs = [Variable(i, name) for i, name in enumerate(processor_instance.input_names)]
     connection.send({'type': 'initialized', 'value': {
-        'outputs': outputs,
-        'inputs': inputs,
+        'outputs': [Variable(v.valueReference, v.name) for v in outputs],
+        'inputs': [Variable(v.valueReference, v.name) for v in inputs],
+        # Add a helper attribute that lists outputs that are part of a matrix
         'matrix_outputs':
             processor_instance.matrix_outputs
             if hasattr(processor_instance, 'matrix_outputs')
@@ -159,12 +160,12 @@ def processor_process(
 
         time.sleep(.001)
 
-
+@dataclass
 class Variable:
+    """A simple container class for variable attributes"""
 
-    def __init__(self, valueReference, name) -> None:
-        self.name = name
-        self.valueReference = valueReference
+    valueReference: int
+    name: str
 
 
 class Processor:
