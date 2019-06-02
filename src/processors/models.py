@@ -27,9 +27,26 @@ def processor_process(
         min_step_spacing: float,
         min_output_spacing: float,
 ):
+    """Runs the given blueprint as a processor
 
+    Is meant to be run in a separate process
+
+    :param connection: a connection object to communicate with the main process
+    :param blueprint_path: the path to the blueprint folder
+    :param init_params: the initialization parameters to the processor as a dictionary
+    :param processor_dir: the directory the created process will run in
+    :param topic: the topic the process will send results to
+    :param source_topic: the topic the process will receive data from
+    :param source_format: the byte format of the data the process will receive
+    :param kafka_server: the address of the kafka bootstrap server the process will use
+    :param min_input_spacing: the minimum time between each input to the processor
+    :param min_step_spacing: the minimum time between each step function call on the processor
+    :param min_output_spacing: the minimum time between each results retrieval from the processor
+    :return:
+    """
     blueprint_path = os.path.realpath(blueprint_path)
 
+    # Creates and sets, deleting if it already exists, the directory the process will use
     try:
         if os.path.exists(processor_dir):
             shutil.rmtree(processor_dir)
@@ -43,6 +60,8 @@ def processor_process(
     next_input_time = 0
     next_step_time = 0
     next_output_time = 0
+
+    # Imports the blueprints and initializes the processor from it
     try:
         processor_instance = SourceFileLoader(
             os.path.basename(blueprint_path), os.path.join(blueprint_path, '__init__.py')
@@ -56,14 +75,20 @@ def processor_process(
         connection.send({'type': 'error', 'value': e})
         return
 
+    # Retrieves the inputs and outputs from the initialized processor
     if hasattr(processor_instance, 'outputs'):
+        # Uses the outputs attribute from the processor if it exists
         outputs = processor_instance.outputs
     else:
+        # Otherwise it has to create outputs from output_names
         outputs = [Variable(i, name) for i, name in enumerate(processor_instance.output_names)]
     if hasattr(processor_instance, 'inputs'):
+        # Uses the inputs attribute from the processor if it exists
         inputs = processor_instance.inputs
     else:
+        # Otherwise it has to create inputs from input_names
         inputs = [Variable(i, name) for i, name in enumerate(processor_instance.input_names)]
+    # Sends the input and output information retrieved to the main process
     connection.send({'type': 'initialized', 'value': {
         'outputs': [Variable(v.valueReference, v.name) for v in outputs],
         'inputs': [Variable(v.valueReference, v.name) for v in inputs],
@@ -83,6 +108,7 @@ def processor_process(
     topic_partition = TopicPartition(topic=source_topic, partition=0)
     output_buffer = bytearray()
 
+    # Waits for the start signal from the main process
     start_params = None
     while start_params is None:
         msg = connection.recv()
@@ -95,15 +121,19 @@ def processor_process(
             measurement_proportions = value['measurement_proportions']
             byte_format = '<' + 'd' * (len(output_refs) + 1)
 
+    # Starts the processor
     processor_instance.start(
         start_time=next_output_time,
         **start_params
     )
+
+    # Use a custom time for results if the processor defines it
     if hasattr(processor_instance, "get_time"):
         processor_custom_time = True
     else:
         processor_custom_time = False
 
+    # Initializes kafka
     consumer = kafka.KafkaConsumer(
         source_topic,
         bootstrap_servers=kafka_server
@@ -116,6 +146,7 @@ def processor_process(
     while True:
         try:
             while connection.poll():
+                # Handles new data from main thread
                 conn_msg = connection.recv()
                 if conn_msg['type'] == 'outputs':
                     output_refs = conn_msg['value']
@@ -132,6 +163,7 @@ def processor_process(
 
             messages = consumer.poll(10)
             for msg in messages.get(topic_partition, []):
+                # Handles new data from kafka
                 for data in struct.iter_unpack(source_format, msg.value):
                     current_time = data[0]
                     if start_time < 0:
@@ -167,6 +199,7 @@ class Variable:
 
 
 class Processor:
+    """The main process endpoint for processor processes"""
 
     def __init__(
             self,
@@ -183,6 +216,22 @@ class Processor:
             processor_root_dir: str,
             kafka_server: str
     ) -> None:
+        """Initializes the processor process
+
+        :param processor_id: the id to use for the processor
+        :param blueprint_id: the id of the blueprint used to create the processor
+        :param blueprint_path: the path to the blueprint used to create the processor
+        :param init_params: the processors initialization parameters as a dict
+        :param topic: the topic the processor will output results to
+        :param source_topic: the topic the processor will receive data from
+        :param source_format: the byte format of the data the processor will receive
+        :param min_input_spacing: the minimum time between each input to the processor
+        :param min_step_spacing: the minimum time between each step function call on the processor
+        :param min_output_spacing: the minimum time between each results retrieval from the processor
+        :param processor_root_dir: the directory the created process will run in
+        :param kafka_server: the address of the kafka bootstrap server the process will use
+        """
+
         self.processor_id = processor_id
         self.blueprint_id = blueprint_id
         self.init_params = init_params
@@ -260,6 +309,17 @@ class Processor:
             }
 
     def start(self, input_refs, measurement_refs, measurement_proportions, output_refs, start_params):
+        """Starts the process, must not be called before init_results
+
+        :param input_refs: the indices of the inputs that will be used
+        :param measurement_refs: the indices of the input data values that will be used.
+                                 Must be in the same order as input_ref.
+        :param measurement_proportions: list of scales to be used on values before inputting them.
+                                        Must be in the same order as input_ref.
+        :param output_refs: the indices of the inputs that will be used
+        :param start_params: the processors start parameters as a dict
+        :return: the processors status as a dict
+        """
         self._set_inputs(
             input_refs=input_refs,
             measurement_refs=measurement_refs,
@@ -290,6 +350,10 @@ class Processor:
         }
 
     def set_inputs(self, input_refs, measurement_refs, measurement_proportions):
+        """Sets the input values, must not be called before start
+
+        :param output_refs: the indices of the inputs that will be used
+        """
         self._set_inputs(input_refs, measurement_proportions, measurement_refs)
         self.connection.send(
             {'type': 'inputs', 'value': (self.actual_input_refs, measurement_refs, measurement_proportions)})
@@ -302,6 +366,14 @@ class Processor:
         self.actual_input_refs = [self.inputs[ref].valueReference for ref in input_refs]
 
     def set_outputs(self, output_refs):
+        """Sets the output values, must not be called before start
+
+        :param input_refs: the indices of the inputs that will be used
+        :param measurement_refs: the indices of the input data values that will be used.
+                                 Must be in the same order as input_ref.
+        :param measurement_proportions: list of scales to be used on values before inputting them.
+                                        Must be in the same order as input_ref.
+        """
         self._set_outputs(output_refs)
         self.connection.send({'type': 'outputs', 'value': self.actual_output_refs})
         return [o.name for o in self.outputs]
@@ -316,6 +388,7 @@ class Processor:
         self.byte_format = '<' + 'd' * (len(self.output_refs) + 1)
 
     def stop(self):
+        """Attempts to stop the process nicely before killing it"""
         try:
             self.connection.send({'type': 'stop', 'value': ''})
         except BrokenPipeError:
