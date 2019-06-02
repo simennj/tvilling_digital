@@ -130,8 +130,7 @@ def processor_process(
                         return
                 # if conn_msg['type'] == 'reload': importlib.reload
 
-            messages = consumer.poll()
-
+            messages = consumer.poll(10)
             for msg in messages.get(topic_partition, []):
                 for data in struct.iter_unpack(source_format, msg.value):
                     current_time = data[0]
@@ -158,7 +157,6 @@ def processor_process(
             logger.exception(f'Exception in processor {processor_dir}')
             connection.send({'type': 'error', 'value': e})
 
-        time.sleep(.001)
 
 @dataclass
 class Variable:
