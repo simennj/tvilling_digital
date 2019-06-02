@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import multiprocessing
 import os
@@ -146,7 +147,7 @@ def processor_process(
     while True:
         try:
             while connection.poll():
-                # Handles new data from main thread
+                # Handles new data from main process
                 conn_msg = connection.recv()
                 if conn_msg['type'] == 'outputs':
                     output_refs = conn_msg['value']
@@ -257,8 +258,6 @@ class Processor:
         self.initialized = False
         self.started = False
 
-        # self.init_var_names = processor_class.__init__.__code__.co_varnames[1:]
-
         kwargs = dict(
             connection=connection,
             blueprint_path=blueprint_path,
@@ -278,10 +277,12 @@ class Processor:
     def retrieve_init_results(self):
         """Waits for and returns the results from the process initalization
 
-        Can only be called once after initialization
+        Can only be called once after initialization.
+        Should be run in a separate thread to prevent the connection from blocking the main thread
         :return: the processors status as a dict
         """
         try:
+            # Blocks the current thread until results are received
             result = self.connection.recv()
         except EOFError:
             result = {'type': 'error', 'value': 'The processor crashed on initialization'}
@@ -360,6 +361,11 @@ class Processor:
         return [i.name for i in self.inputs]
 
     def _set_inputs(self, input_refs, measurement_proportions, measurement_refs):
+        """Sets what input values will be shown
+
+        Should only be called by internal functions.
+        Does not change the actual input values.
+        """
         self.input_refs = input_refs
         self.measurement_refs = measurement_refs
         self.measurement_proportions = measurement_proportions
@@ -379,6 +385,11 @@ class Processor:
         return [o.name for o in self.outputs]
 
     def _set_outputs(self, output_refs):
+        """Sets what output values will be shown
+
+        Should only be called by internal functions.
+        Does not change the actual output values.
+        """
         if output_refs == 'all':
             self.output_refs = list(range(len(self.outputs)))
             self.actual_output_refs = [o.valueReference for o in self.outputs]
