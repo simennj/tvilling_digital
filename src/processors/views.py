@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import shutil
@@ -90,13 +91,29 @@ async def processor_create(request: web.Request):
         kafka_server=request.app['settings'].KAFKA_SERVER,
         topic=topic,
     )
-    init_results = processor_instance.retrieve_init_results()
-    request.app['topics'][topic] = init_results
+    thread = Thread(target=get_initialization_results, kwargs=dict(
+        app=request.app,
+        processor_instance=processor_instance
+    ))
+    thread.start()
+    while thread.is_alive():
+        await asyncio.sleep(.1)
+    thread.join()
     request.app['processors'][processor_id] = processor_instance
     path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
     with open(path, 'w') as f:
         f.write(dumps(processor_instance))
-    raise web.HTTPCreated(body=dumps(init_results), content_type='application/json')
+    raise web.HTTPCreated()
+
+
+def get_initialization_results(app, processor_instance):
+    """Get the initialization results from a processor
+
+    Is meant to be run as a target in a Thread.
+    Will put the results in app['topics'].
+    """
+    results = processor_instance.retrieve_init_results()
+    app['topics'][processor_instance.topic] = results
 
 
 @routes.get('/processors/clear', name='processors_clear')
@@ -107,11 +124,6 @@ async def processors_clear(request: web.Request):
         if processor_id not in request.app['processors']:
             shutil.rmtree(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id))
     raise web.HTTPAccepted()
-
-
-def start_processor(app, processor_instance, **kwargs):
-    start_results = processor_instance.start(**kwargs)
-    app['topics'][processor_instance.topic] = start_results
 
 
 @routes.post('/processors/start', name='processor_start')
@@ -142,15 +154,15 @@ async def processor_start(request: web.Request):
         start_params = json.loads(post.get('start_params', '{}'))
     except JSONDecodeError:
         raise web.HTTPUnprocessableEntity(reason='Could not process start_params as json')
-    Thread(target=start_processor, kwargs=dict(
-        app=request.app,
-        processor_instance=processor_instance,
+    # Run in a seperate thread to prevent connection from blocking the main thread
+    start_results = processor_instance.start(
         input_refs=input_refs,
         measurement_refs=measurement_refs,
         measurement_proportions=measurement_proportions,
         output_refs=output_refs,
         start_params=start_params
-    )).run()
+    )
+    request.app['topics'][processor_instance.topic] = start_results
     path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
     with open(path, 'w') as f:
         f.write(dumps(processor_instance))
