@@ -7,7 +7,7 @@ from aiohttp import web, WSMessage
 from aiohttp_session import get_session
 
 from src.clients.models import Client
-from src.utils import RouteTableDefDocs, try_get, get_client
+from src.utils import RouteTableDefDocs, get_client
 
 routes = RouteTableDefDocs()
 
@@ -38,7 +38,7 @@ async def index(request: web.Request):
     - /processors/ for running processors on the data
     - /blueprints/ for the blueprints used to create processors
     - /fmus/ for available FMUs (for the fmu blueprint)
-    - /fmus/ for available models (for the fedem blueprint)
+    - /models/ for available models (for the fedem blueprint)
     - /topics/ for all available data sources (datasources and processors)
     """
 
@@ -81,6 +81,7 @@ async def topics(request: web.Request):
     Append the id of a topic to get details about only that topic
     Append the id of a topic and /subscribe to subscribe to a topic
     Append the id of a topic and /unsubscribe to unsubscribe to a topic
+    Append the id of a topic and /history to get historic data from a topic
     """
     return web.json_response(request.app['topics'])
 
@@ -91,6 +92,7 @@ async def topics_detail(request: web.Request):
 
     Append /subscribe to subscribe to the topic
     Append /unsubscribe to unsubscribe to the topic
+    Append /history to get historic data from a topic
     """
     topic = request.match_info['id']
     if topic not in request.app['topics']:
@@ -118,6 +120,45 @@ async def unsubscribe(request: web.Request):
         raise web.HTTPNotFound()
     request.app['subscribers'][topic].discard(client)
     raise web.HTTPAccepted()
+
+
+@routes.get('/topics/{id}/history', name='history')
+async def history(request: web.Request):
+    """Get historic data from the given topic
+
+    get params:
+    - start: the start timestamp
+      as milliseconds since 00:00:00 Thursday, 1 January 1970
+    - end: (optinoal) the end timestamp
+      as milliseconds since 00:00:00 Thursday, 1 January 1970
+    """
+    topic = request.match_info['id']
+    start = request.query['start']
+    end = request.query['end'] if 'end' in request.query else 9999999999999
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise web.HTTPBadRequest()
+    if topic not in request.app['topics']:
+        raise web.HTTPNotFound()
+    consumer = aiokafka.AIOKafkaConsumer(
+        topic,
+        loop=asyncio.get_event_loop(),
+        api_version='2.2.0',
+        bootstrap_servers=request.app['settings'].KAFKA_SERVER
+    )
+    await consumer.start()
+    topic_partition = aiokafka.TopicPartition(topic, 0)
+    offsets = await consumer.offsets_for_times({topic_partition: start})
+    offset = offsets[topic_partition].offset
+    consumer.seek(topic_partition, offset)
+    data = topic.encode('utf-8')
+    try:
+        async for msg in consumer:
+            if msg.timestamp > end:
+                break
+            data += msg.value
+    finally:
+        await consumer.stop()
+    return web.Response(body=data)
 
 
 @routes.get('/models/', name='models')
