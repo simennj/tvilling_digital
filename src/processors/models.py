@@ -202,10 +202,12 @@ class Processor:
         self.measurement_refs = []
         self.measurement_proportions = []
         self.outputs = []
+        self.matrix_outputs = []
         self.inputs = []
         self.byte_format = '<' + 'd' * (len(self.output_refs) + 1)
         self.processor_dir = os.path.join(processor_root_dir, processor_id)
-        self.running = False
+        self.initialized = False
+        self.started = False
 
         # self.init_var_names = processor_class.__init__.__code__.co_varnames[1:]
 
@@ -225,11 +227,18 @@ class Processor:
         self.process = multiprocessing.Process(target=processor_process, kwargs=kwargs)
         self.process.start()
 
-    def init_results(self):
+    def retrieve_init_results(self):
+        """Waits for and returns the results from the process initalization
+
+        Can only be called once after initialization
+        :return: the processors status as a dict
+        """
         try:
             result = self.connection.recv()
         except EOFError:
             result = {'type': 'error', 'value': 'The processor crashed on initialization'}
+        except Exception as e:
+            result = {'type': 'error', 'value': 'Unable to process initialization data from processor'}
         if result['type'] == 'error':
             return {
                 'url': '/processors/' + self.processor_id,
@@ -239,7 +248,7 @@ class Processor:
             self.outputs = result['value']['outputs']
             self.matrix_outputs = result['value']['matrix_outputs']
             self.inputs = result['value']['inputs']
-            self.running = True
+            self.initialized = True
             return {
                 'url': '/processors/' + self.processor_id,
                 'input_names': [i.name for i in self.inputs],
@@ -247,7 +256,8 @@ class Processor:
                 'matrix_outputs': self.matrix_outputs,
                 'available_output_names': [o.name for o in self.outputs],
                 'byte_format': self.byte_format,
-                'started': False,
+                'started': self.started,
+                'initialized': self.initialized,
             }
 
     def start(self, input_refs, measurement_refs, measurement_proportions, output_refs, start_params):
@@ -268,6 +278,7 @@ class Processor:
                 'measurement_proportions': self.measurement_proportions,
             }
         })
+        self.started = True
         return {
             'url': '/processors/' + self.processor_id,
             'input_names': [i.name for i in self.inputs],
@@ -275,12 +286,14 @@ class Processor:
             'matrix_outputs': self.matrix_outputs,
             'available_output_names': [o.name for o in self.outputs],
             'byte_format': self.byte_format,
-            'started': True,
+            'started': self.started,
+            'initialized': self.initialized,
         }
 
     def set_inputs(self, input_refs, measurement_refs, measurement_proportions):
         self._set_inputs(input_refs, measurement_proportions, measurement_refs)
-        self.connection.send({'type': 'inputs', 'value': (self.actual_input_refs, measurement_refs, measurement_proportions)})
+        self.connection.send(
+            {'type': 'inputs', 'value': (self.actual_input_refs, measurement_refs, measurement_proportions)})
         return [i.name for i in self.inputs]
 
     def _set_inputs(self, input_refs, measurement_proportions, measurement_refs):
@@ -307,6 +320,8 @@ class Processor:
         try:
             self.connection.send({'type': 'stop', 'value': ''})
         except BrokenPipeError:
+            pass
+        except EOFError:
             pass
         finally:
             self.process.join(5)

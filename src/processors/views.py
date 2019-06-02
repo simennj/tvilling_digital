@@ -14,7 +14,9 @@ routes = RouteTableDefDocs()
 
 @routes.get('/processors/', name='processor_list')
 async def processor_list(request: web.Request):
-    """List all uploaded processors.
+    """List all created processors.
+
+    Returns a json object of processor id to processor status objects.
 
     Append a processor id to get more information about a listed processor.
     Append /create to create a new processor instance
@@ -23,11 +25,17 @@ async def processor_list(request: web.Request):
 
     created_processors = request.app['processors']
     processors = {
-        s: {
-            'created': s in created_processors,
-            'running': s in created_processors and created_processors[s].running
-        }
+        s[:-5]:
+            {
+                'initialized': created_processors[s[:-5]].initialized,
+                'started': created_processors[s[:-5]].started
+            } if s[:-5] in created_processors
+            else {
+                'initialized': False,
+                'started': False
+            }
         for s in os.listdir(request.app['settings'].PROCESSOR_DIR)
+        if s[-5:] == '.json'
     }
     return web.json_response(processors, dumps=dumps)
 
@@ -82,15 +90,18 @@ async def processor_create(request: web.Request):
         kafka_server=request.app['settings'].KAFKA_SERVER,
         topic=topic,
     )
-    init_results = processor_instance.init_results()
+    init_results = processor_instance.retrieve_init_results()
     request.app['topics'][topic] = init_results
     request.app['processors'][processor_id] = processor_instance
+    path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
+    with open(path, 'w') as f:
+        f.write(dumps(processor_instance))
     raise web.HTTPCreated(body=dumps(init_results), content_type='application/json')
 
 
 @routes.get('/processors/clear', name='processors_clear')
 async def processors_clear(request: web.Request):
-    """Delete all stopped processors"""
+    """Delete data from all processors that are not running"""
 
     for processor_id in os.listdir(request.app['settings'].PROCESSOR_DIR):
         if processor_id not in request.app['processors']:
@@ -140,6 +151,9 @@ async def processor_start(request: web.Request):
         output_refs=output_refs,
         start_params=start_params
     )).run()
+    path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
+    with open(path, 'w') as f:
+        f.write(dumps(processor_instance))
     raise web.HTTPAccepted()
 
 
@@ -160,10 +174,11 @@ async def processor_detail(request: web.Request):
         return web.json_response(request.app['processors'][processor_id], dumps=dumps)
     if processor_id not in os.listdir(request.app['settings'].PROCESSOR_DIR):
         raise web.HTTPNotFound()
-    return web.json_response(
-        {'processor_id': processor_id, 'running': False},
-        dumps=dumps
-    )
+    with open(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json'), 'r') as f:
+        kwargs = json.loads(f.read())
+    kwargs['initialized'] = False
+    kwargs['started'] = False
+    return web.json_response(kwargs, dumps=dumps)
     # with open(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id)) as f:
     #     return web.json_response(text=f.read(), dumps=dumps)
 
