@@ -18,8 +18,6 @@ from src.processors import views as processor_views
 from src.blueprints import views as blueprints_views
 from src.kafka import consume_from_kafka
 from src.processors.models import Processor
-from src.simulations import views as simulation_views
-from src.simulations.models import Simulation
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +46,6 @@ def init_app(settings) -> web.Application:
     app['settings'] = settings
     aiohttp_session.setup(app, EncryptedCookieStorage(settings.SECRET_KEY))
     app.router.add_routes(views.routes)
-    app.router.add_routes(simulation_views.routes)
     app.router.add_routes(datasource_views.routes)
     app.router.add_routes(client_views.routes)
     app.router.add_routes(fmu_views.routes)
@@ -69,7 +66,6 @@ def init_app(settings) -> web.Application:
 
     # TODO: make usable over multiple application instances (scaling)?
     app['clients']: Dict[str, Client] = {}
-    app['simulations']: Dict[str, Simulation] = {}
     app['processors']: Dict[str, Processor] = {}
     app['subscribers'] = defaultdict(set)
     app['topics']: Dict[str, Dict] = {}
