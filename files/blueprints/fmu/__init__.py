@@ -1,3 +1,6 @@
+"""
+A blueprint for running FMUs.
+"""
 import os
 import re
 from collections import defaultdict
@@ -8,6 +11,12 @@ from fmpy import fmi2
 
 
 def prepare_outputs(output_refs):
+    """
+    Create FMUPy compatible value references and outputs buffer from output_refs
+
+    :param output_refs: list of output indices
+    :return: tuple with outputs buffer and value reference list
+    """
     vr = (fmi2.fmi2ValueReference * len(output_refs))(*output_refs)
     outputs = (fmi2.fmi2Real * len(output_refs))()
     return outputs, vr
@@ -17,9 +26,15 @@ cell_regex = re.compile(r'.+_m\d\d$')
 
 
 class P:
+    """The interface between the application and the FMU"""
 
     def __init__(self, fmu="testrig.fmu"):
-        file = os.path.realpath(os.path.join('../../fmus', fmu)) # TODO: validate file path
+        """
+        Prepares the FMU for start and retrieves the available the inputs, outputs and output matrices from it
+
+        :param fmu: the name of the fmu that will be used
+        """
+        file = os.path.realpath(os.path.join('../../fmus', fmu))  # TODO: validate file path
         self.model_description = fmpy.read_model_description(file)
         self.dt = 0
         self.t = 0
@@ -41,10 +56,15 @@ class P:
         self.file = file
         self.fmu = None
 
-    def set_inputs(self, input_refs, input_values):
-        self.fmu.setReal(input_refs, input_values)
+    def start(self, start_time, time_step_input_ref=-1):
+        """
+        Starts the FMU
 
-    def start(self, start_time):
+        :param start_time: not used in this blueprint
+        :param time_step_input_ref: optional value for custom time_step input
+        """
+        if time_step_input_ref >= 0:
+            self.time_step_input_ref = time_step_input_ref
         with open(os.devnull, 'w') as outfile:
             os.dup2(outfile.fileno(), 1)
         self.fmu = fmi2.FMU2Slave(
@@ -58,11 +78,8 @@ class P:
         self.fmu.enterInitializationMode()
         self.fmu.exitInitializationMode()
 
-    # def set_inputs(self, input_refs: List[int], input_values: List[int]):
-    #     if self.time_input_ref >= 0:
-    #         self.fmu.setReal([self.time_input_ref, *input_refs], [dt, *input_values])
-    #     else:
-    #         self.fmu.setReal(input_refs, input_values)
+    def set_inputs(self, input_refs, input_values):
+        self.fmu.setReal(input_refs, input_values)
 
     def get_outputs(self, output_refs: List[int]):
         outputs, vr = prepare_outputs(output_refs)
@@ -71,6 +88,7 @@ class P:
 
     def step(self, t):
         self.dt = t - self.t
+        # Only step if time since last step is greater than 0
         if self.dt > 0:
             if self.time_step_input_ref >= 0:
                 self.fmu.setReal([self.time_step_input_ref], [self.dt])
@@ -80,5 +98,3 @@ class P:
     def stop(self):
         self.fmu.terminate()
 
-
-    # fmu.freeInstance()
