@@ -13,7 +13,8 @@ class Client:
         self.buffers = defaultdict(bytearray)
 
     async def receive(self, topic, bytes):
-        """Asynchronously transmit data to the clients websocket connections
+        """
+        Asynchronously transmit data to the clients websocket connections
 
         Will add the data to the buffer and send it when the buffer becomes large enough
 

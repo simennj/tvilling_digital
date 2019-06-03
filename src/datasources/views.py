@@ -13,7 +13,8 @@ routes = RouteTableDefDocs()
 
 @routes.get('/datasources/', name='datasource_list')
 async def datasource_list(request: web.Request):
-    """List all datasources.
+    """
+    List all datasources.
 
     Listed datasources will contain true if currently running and false otherwise.
     Append an id to get more information about a listed datasource.
@@ -30,24 +31,30 @@ async def datasource_list(request: web.Request):
 
 @routes.post('/datasources/create', name='datasource_create')
 async def datasource_create(request: web.Request):
-    """Create a new datasource from post request.
+    """
+    Create a new datasource from post request.
 
     Post parameters:
+
     - id: the id to use for the source
     - address: the address to receive data from
     - port: the port to receive data from
     - output_name: the names of the outputs
       Must be all the outputs and in the same order as in the byte stream.
+
     - output_ref: the indexes of the outputs that will be used
     - time_index: the index of the time value in the output_name list
     - byte_format: the python struct format string for the data received.
       Must include byte order (https://docs.python.org/3/library/struct.html?highlight=struct#byte-order-size-and-alignment)
       Must be in the same order as name.
       Will not be used if catman is true.
+
     - catman: set to true to use catman byte format
       byte_format is not required if set
+
     - single: set to true if the data is single precision float
       Only used if catman is set to true
+
     returns redirect to created simulation page
     """
 
@@ -88,7 +95,8 @@ async def datasource_create(request: web.Request):
 
 @routes.get('/datasources/{id}', name='datasource_detail')
 async def datasource_detail(request: web.Request):
-    """Information about the datasource with the given id.
+    """
+    Information about the datasource with the given id.
     To delete the datasource append /delete
     To subscribe to the datasource append /subscribe
     To start the datasource append /start
@@ -105,7 +113,8 @@ async def datasource_detail(request: web.Request):
 
 
 def try_get_source(app, topic):
-    """Attempt to get the datasource sending to the given topic
+    """
+    Attempt to get the datasource sending to the given topic
 
     Raises an HTTPNotFound error if not found.
     """

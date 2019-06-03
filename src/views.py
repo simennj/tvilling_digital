@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 @routes.get('/session')
 async def session_endpoint(request: web.Request):
-    """Only returns a session cookie
+    """
+    Only returns a session cookie
 
     Generates and returns a session cookie.
     """
@@ -27,7 +28,8 @@ async def session_endpoint(request: web.Request):
 
 @routes.get('/')
 async def index(request: web.Request):
-    """The API index
+    """
+    The API index
 
     A standard HTTP request will return a sample page with a simple example of api use.
     A WebSocket request will initiate a websocket connection making it possible to retrieve measurement and simulation data.
@@ -76,7 +78,8 @@ async def index(request: web.Request):
 
 @routes.get('/topics/', name='topics')
 async def topics(request: web.Request):
-    """Lists the available data sources for plotting or processors
+    """
+    Lists the available data sources for plotting or processors
 
     Append the id of a topic to get details about only that topic
     Append the id of a topic and /subscribe to subscribe to a topic
@@ -88,7 +91,8 @@ async def topics(request: web.Request):
 
 @routes.get('/topics/{id}', name='topics_detail')
 async def topics_detail(request: web.Request):
-    """Show a single topic
+    """
+    Show a single topic
 
     Append /subscribe to subscribe to the topic
     Append /unsubscribe to unsubscribe to the topic
@@ -124,13 +128,12 @@ async def unsubscribe(request: web.Request):
 
 @routes.get('/topics/{id}/history', name='history')
 async def history(request: web.Request):
-    """Get historic data from the given topic
+    """
+    Get historic data from the given topic
 
     get params:
-    - start: the start timestamp
-      as milliseconds since 00:00:00 Thursday, 1 January 1970
-    - end: (optinoal) the end timestamp
-      as milliseconds since 00:00:00 Thursday, 1 January 1970
+    - start: the start timestamp as milliseconds since 00:00:00 Thursday, 1 January 1970
+    - end: (optinoal) the end timestamp as milliseconds since 00:00:00 Thursday, 1 January 1970
     """
     topic = request.match_info['id']
     start = request.query['start']

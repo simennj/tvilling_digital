@@ -15,7 +15,8 @@ routes = RouteTableDefDocs()
 
 @routes.get('/processors/', name='processor_list')
 async def processor_list(request: web.Request):
-    """List all created processors.
+    """
+    List all created processors.
 
     Returns a json object of processor id to processor status objects.
 
@@ -43,11 +44,15 @@ async def processor_list(request: web.Request):
 
 @routes.post('/processors/create', name='processor_create')
 async def processor_create(request: web.Request):
-    """Create a new processor from post request.
+    """
+    Create a new processor from post request.
 
     Post params:
-    - id:* id of new processor instance (must match [a-zA-Z_][a-zA-Z0-9_]{0,20})
-    - blueprint:* id of blueprint to be used (must match [a-zA-Z_][a-zA-Z0-9_]{0,20})
+
+    - id:* id of new processor instance
+      max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore
+    - blueprint:* id of blueprint to be used
+      max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore
     - init_params: the processor specific initialization variables as a json string
     - topic:* topic to use as input to processor
     - min_output_interval: the shortest time allowed between each output from processor in seconds
@@ -107,7 +112,8 @@ async def processor_create(request: web.Request):
 
 
 def get_initialization_results(app, processor_instance):
-    """Get the initialization results from a processor
+    """
+    Get the initialization results from a processor
 
     Is meant to be run as a target in a Thread.
     Will put the results in app['topics'].
@@ -133,10 +139,13 @@ async def processors_clear(request: web.Request):
 
 @routes.post('/processors/start', name='processor_start')
 async def processor_start(request: web.Request):
-    """Start a processor from post request.
+    """
+    Start a processor from post request.
 
     Post params:
-    - id:* id of processor instance (must match [a-zA-Z_][a-zA-Z0-9_]{0,20})
+
+    - id:* id of processor instance
+      max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore
     - start_params: the processor specific start parameters as a json string
     - input_ref: list of reference values to the inputs to be used
     - output_ref: list of reference values to the outputs to be used
@@ -176,7 +185,8 @@ async def processor_start(request: web.Request):
 
 @routes.get('/processors/{id}', name='processor_detail')
 async def processor_detail(request: web.Request):
-    """Get detailed information for the processor with the given id
+    """
+    Get detailed information for the processor with the given id
 
     Append /subscribe to subscribe to the processor
     Append /unsubscribe to unsubscribe to the processor
@@ -241,9 +251,11 @@ async def processor_delete(request: web.Request):
 
 @routes.post('/processors/{id}/outputs', name='processor_outputs_update')
 async def processor_outputs_update(request: web.Request):
-    """Update the processor outputs
+    """
+    Update the processor outputs
 
         Post params:
+
         - output_ref: reference values to the outputs to be used
     """
 
@@ -264,9 +276,11 @@ async def processor_outputs_update(request: web.Request):
 
 @routes.post('/processors/{id}/inputs', name='processor_inputs_update')
 async def processor_inputs_update(request: web.Request):
-    """Update the processor inputs
+    """
+    Update the processor inputs
 
         Post params:
+
         - input_ref: reference values to the inputs to be used
         - measurement_ref: reference values to the measurement inputs to be used for the inputs.
           Must be in the same order as input_ref.

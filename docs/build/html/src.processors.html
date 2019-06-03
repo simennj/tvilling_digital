@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.processors package &#8212; Tvilling Digital  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="src.fmus package" href="src.fmus.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-processors-package">
+<h1>src.processors package<a class="headerlink" href="#src-processors-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.processors.models">
+<span id="src-processors-models-module"></span><h2>src.processors.models module<a class="headerlink" href="#module-src.processors.models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.processors.models.Processor">
+<em class="property">class </em><code class="sig-prename descclassname">src.processors.models.</code><code class="sig-name descname">Processor</code><span class="sig-paren">(</span><em class="sig-param">processor_id: str</em>, <em class="sig-param">blueprint_id: str</em>, <em class="sig-param">blueprint_path: str</em>, <em class="sig-param">init_params: dict</em>, <em class="sig-param">topic: str</em>, <em class="sig-param">source_topic: str</em>, <em class="sig-param">source_format: str</em>, <em class="sig-param">min_input_spacing: float</em>, <em class="sig-param">min_step_spacing: float</em>, <em class="sig-param">min_output_spacing: float</em>, <em class="sig-param">processor_root_dir: str</em>, <em class="sig-param">kafka_server: str</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The main process endpoint for processor processes</p>
+<dl class="method">
+<dt id="src.processors.models.Processor.retrieve_init_results">
+<code class="sig-name descname">retrieve_init_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor.retrieve_init_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits for and returns the results from the process initalization</p>
+<p>Can only be called once after initialization.
+Should be run in a separate thread to prevent the connection from blocking the main thread
+:return: the processors status as a dict</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.processors.models.Processor.set_inputs">
+<code class="sig-name descname">set_inputs</code><span class="sig-paren">(</span><em class="sig-param">input_refs</em>, <em class="sig-param">measurement_refs</em>, <em class="sig-param">measurement_proportions</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor.set_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the input values, must not be called before start</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_refs</strong> – the indices of the inputs that will be used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.processors.models.Processor.set_outputs">
+<code class="sig-name descname">set_outputs</code><span class="sig-paren">(</span><em class="sig-param">output_refs</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor.set_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the output values, must not be called before start</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_refs</strong> – the indices of the inputs that will be used</p></li>
+<li><p><strong>measurement_refs</strong> – the indices of the input data values that will be used.
+Must be in the same order as input_ref.</p></li>
+<li><p><strong>measurement_proportions</strong> – list of scales to be used on values before inputting them.
+Must be in the same order as input_ref.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.processors.models.Processor.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param">input_refs</em>, <em class="sig-param">measurement_refs</em>, <em class="sig-param">measurement_proportions</em>, <em class="sig-param">output_refs</em>, <em class="sig-param">start_params</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the process, must not be called before init_results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_refs</strong> – the indices of the inputs that will be used</p></li>
+<li><p><strong>measurement_refs</strong> – the indices of the input data values that will be used.
+Must be in the same order as input_ref.</p></li>
+<li><p><strong>measurement_proportions</strong> – list of scales to be used on values before inputting them.
+Must be in the same order as input_ref.</p></li>
+<li><p><strong>output_refs</strong> – the indices of the inputs that will be used</p></li>
+<li><p><strong>start_params</strong> – the processors start parameters as a dict</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the processors status as a dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.processors.models.Processor.stop">
+<em class="property">async </em><code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Processor.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to stop the process nicely, killing it otherwise</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="src.processors.models.Variable">
+<em class="property">class </em><code class="sig-prename descclassname">src.processors.models.</code><code class="sig-name descname">Variable</code><span class="sig-paren">(</span><em class="sig-param">valueReference: int</em>, <em class="sig-param">name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.Variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple container class for variable attributes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.models.processor_process">
+<code class="sig-prename descclassname">src.processors.models.</code><code class="sig-name descname">processor_process</code><span class="sig-paren">(</span><em class="sig-param">connection: multiprocessing.connection.Connection</em>, <em class="sig-param">blueprint_path: str</em>, <em class="sig-param">init_params: dict</em>, <em class="sig-param">processor_dir: str</em>, <em class="sig-param">topic: str</em>, <em class="sig-param">source_topic: str</em>, <em class="sig-param">source_format: str</em>, <em class="sig-param">kafka_server: str</em>, <em class="sig-param">min_input_spacing: float</em>, <em class="sig-param">min_step_spacing: float</em>, <em class="sig-param">min_output_spacing: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.models.processor_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the given blueprint as a processor</p>
+<p>Is meant to be run in a separate process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> – a connection object to communicate with the main process</p></li>
+<li><p><strong>blueprint_path</strong> – the path to the blueprint folder</p></li>
+<li><p><strong>init_params</strong> – the initialization parameters to the processor as a dictionary</p></li>
+<li><p><strong>processor_dir</strong> – the directory the created process will run in</p></li>
+<li><p><strong>topic</strong> – the topic the process will send results to</p></li>
+<li><p><strong>source_topic</strong> – the topic the process will receive data from</p></li>
+<li><p><strong>source_format</strong> – the byte format of the data the process will receive</p></li>
+<li><p><strong>kafka_server</strong> – the address of the kafka bootstrap server the process will use</p></li>
+<li><p><strong>min_input_spacing</strong> – the minimum time between each input to the processor</p></li>
+<li><p><strong>min_step_spacing</strong> – the minimum time between each step function call on the processor</p></li>
+<li><p><strong>min_output_spacing</strong> – the minimum time between each results retrieval from the processor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.processors.views">
+<span id="src-processors-views-module"></span><h2>src.processors.views module<a class="headerlink" href="#module-src.processors.views" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.processors.views.dumps">
+<code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">dumps</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">*</em>, <em class="sig-param">skipkeys=False</em>, <em class="sig-param">ensure_ascii=True</em>, <em class="sig-param">check_circular=True</em>, <em class="sig-param">allow_nan=True</em>, <em class="sig-param">cls=None</em>, <em class="sig-param">indent=None</em>, <em class="sig-param">separators=None</em>, <em class="sig-param">default=&lt;function make_serializable&gt;</em>, <em class="sig-param">sort_keys=False</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version of json.dumps that uses make serializable recursively to make objects serializable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.get_initialization_results">
+<code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">get_initialization_results</code><span class="sig-paren">(</span><em class="sig-param">app</em>, <em class="sig-param">processor_instance</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.get_initialization_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the initialization results from a processor</p>
+<p>Is meant to be run as a target in a Thread.
+Will put the results in app[‘topics’].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_create">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_create</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new processor from post request.</p>
+<p>Post params:</p>
+<ul class="simple">
+<li><p>id:* id of new processor instance
+max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore</p></li>
+<li><p>blueprint:* id of blueprint to be used
+max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore</p></li>
+<li><p>init_params: the processor specific initialization variables as a json string</p></li>
+<li><p>topic:* topic to use as input to processor</p></li>
+<li><p>min_output_interval: the shortest time allowed between each output from processor in seconds</p></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_delete">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_delete</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the processor with the given id.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_detail">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_detail</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get detailed information for the processor with the given id</p>
+<p>Append /subscribe to subscribe to the processor
+Append /unsubscribe to unsubscribe to the processor
+Append /stop to stop the processor
+Append /delete to delete the processor
+Append /outputs to get the outputs of the processor
+Append /inputs to get the inputs of the processor</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_inputs_update">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_inputs_update</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_inputs_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the processor inputs</p>
+<blockquote>
+<div><p>Post params:</p>
+<ul class="simple">
+<li><p>input_ref: reference values to the inputs to be used</p></li>
+<li><p>measurement_ref: reference values to the measurement inputs to be used for the inputs.
+Must be in the same order as input_ref.</p></li>
+<li><p>measurement_proportion: scale to be used on measurement values before inputting them.
+Must be in the same order as input_ref.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_list">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_list</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all created processors.</p>
+<p>Returns a json object of processor id to processor status objects.</p>
+<p>Append a processor id to get more information about a listed processor.
+Append /create to create a new processor instance
+Append /clear to delete stopped processors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_outputs_update">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_outputs_update</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_outputs_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the processor outputs</p>
+<blockquote>
+<div><p>Post params:</p>
+<ul class="simple">
+<li><p>output_ref: reference values to the outputs to be used</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_start">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_start</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a processor from post request.</p>
+<p>Post params:</p>
+<ul class="simple">
+<li><p>id:* id of processor instance
+max 20 chars, first char must be alphabetic or underscore, other chars must be alphabetic, digit or underscore</p></li>
+<li><p>start_params: the processor specific start parameters as a json string</p></li>
+<li><p>input_ref: list of reference values to the inputs to be used</p></li>
+<li><p>output_ref: list of reference values to the outputs to be used</p></li>
+<li><p>measurement_ref: list of reference values to the measurement inputs to be used for the inputs.
+Must be in the same order as input_ref.</p></li>
+<li><p>measurement_proportion: list of scales to be used on measurement values before inputting them.
+Must be in the same order as input_ref.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_stop">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_stop</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the processor with the given id.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_subscribe">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_subscribe</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to the processor with the given id</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processor_unsubscribe">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processor_unsubscribe</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processor_unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe to the processor with the given id</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.processors.views.processors_clear">
+<em class="property">async </em><code class="sig-prename descclassname">src.processors.views.</code><code class="sig-name descname">processors_clear</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.processors.views.processors_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete data from all processors that are not running</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.processors">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.processors" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Tvilling Digital</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.fmus.html" title="previous chapter">src.fmus package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Simen Norderud Jensen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.processors.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

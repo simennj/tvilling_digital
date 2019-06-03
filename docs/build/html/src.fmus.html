@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.fmus package &#8212; Tvilling Digital  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.processors package" href="src.processors.html" />
+    <link rel="prev" title="src.datasources package" href="src.datasources.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-fmus-package">
+<h1>src.fmus package<a class="headerlink" href="#src-fmus-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.fmus.views">
+<span id="src-fmus-views-module"></span><h2>src.fmus.views module<a class="headerlink" href="#module-src.fmus.views" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.fmus.views.dumps">
+<code class="sig-prename descclassname">src.fmus.views.</code><code class="sig-name descname">dumps</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">*</em>, <em class="sig-param">skipkeys=False</em>, <em class="sig-param">ensure_ascii=True</em>, <em class="sig-param">check_circular=True</em>, <em class="sig-param">allow_nan=True</em>, <em class="sig-param">cls=None</em>, <em class="sig-param">indent=None</em>, <em class="sig-param">separators=None</em>, <em class="sig-param">default=&lt;function make_serializable&gt;</em>, <em class="sig-param">sort_keys=False</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#src.fmus.views.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version of json.dumps that uses make serializable recursively to make objects serializable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.fmus.views.fmu_detail">
+<em class="property">async </em><code class="sig-prename descclassname">src.fmus.views.</code><code class="sig-name descname">fmu_detail</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.fmus.views.fmu_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get detailed information for the FMU with the given id</p>
+<p>Append /models to get the 3d models if any</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.fmus.views.fmu_list">
+<em class="property">async </em><code class="sig-prename descclassname">src.fmus.views.</code><code class="sig-name descname">fmu_list</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.fmus.views.fmu_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all uploaded FMUs.</p>
+<p>Append an FMU id to get more information about a listed FMU.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.fmus.views.fmu_model">
+<em class="property">async </em><code class="sig-prename descclassname">src.fmus.views.</code><code class="sig-name descname">fmu_model</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.fmus.views.fmu_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a 3d model belonging to the FMU if it exists</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.fmus.views.fmu_models">
+<em class="property">async </em><code class="sig-prename descclassname">src.fmus.views.</code><code class="sig-name descname">fmu_models</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.fmus.views.fmu_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the 3d models belonging to the FMU if any exists</p>
+<p>Append the models id the get a specific model</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.fmus">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.fmus" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Tvilling Digital</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.datasources.html" title="previous chapter">src.datasources package</a></li>
+      <li>Next: <a href="src.processors.html" title="next chapter">src.processors package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Simen Norderud Jensen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.fmus.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

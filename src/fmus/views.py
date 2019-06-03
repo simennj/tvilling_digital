@@ -10,7 +10,8 @@ routes = RouteTableDefDocs()
 
 @routes.get('/fmus/', name='fmu_list')
 async def fmu_list(request: web.Request):
-    """List all uploaded FMUs.
+    """
+    List all uploaded FMUs.
 
     Append an FMU id to get more information about a listed FMU.
     """
@@ -20,7 +21,8 @@ async def fmu_list(request: web.Request):
 
 @routes.get('/fmus/{id}', name='fmu_detail')
 async def fmu_detail(request: web.Request):
-    """Get detailed information for the FMU with the given id
+    """
+    Get detailed information for the FMU with the given id
 
     Append /models to get the 3d models if any
     """
@@ -39,7 +41,8 @@ async def fmu_detail(request: web.Request):
 
 @routes.get('/fmus/{id}/models/', name='fmu_models')
 async def fmu_models(request: web.Request):
-    """List the 3d models belonging to the FMU if any exists
+    """
+    List the 3d models belonging to the FMU if any exists
 
     Append the models id the get a specific model
     """

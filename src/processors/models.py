@@ -28,7 +28,8 @@ def processor_process(
         min_step_spacing: float,
         min_output_spacing: float,
 ):
-    """Runs the given blueprint as a processor
+    """
+    Runs the given blueprint as a processor
 
     Is meant to be run in a separate process
 
@@ -217,7 +218,8 @@ class Processor:
             processor_root_dir: str,
             kafka_server: str
     ) -> None:
-        """Initializes the processor process
+        """
+        Initializes the processor process
 
         :param processor_id: the id to use for the processor
         :param blueprint_id: the id of the blueprint used to create the processor
@@ -275,7 +277,8 @@ class Processor:
         self.process.start()
 
     def retrieve_init_results(self):
-        """Waits for and returns the results from the process initalization
+        """
+        Waits for and returns the results from the process initalization
 
         Can only be called once after initialization.
         Should be run in a separate thread to prevent the connection from blocking the main thread
@@ -310,7 +313,8 @@ class Processor:
             }
 
     def start(self, input_refs, measurement_refs, measurement_proportions, output_refs, start_params):
-        """Starts the process, must not be called before init_results
+        """
+        Starts the process, must not be called before init_results
 
         :param input_refs: the indices of the inputs that will be used
         :param measurement_refs: the indices of the input data values that will be used.
@@ -351,7 +355,8 @@ class Processor:
         }
 
     def set_inputs(self, input_refs, measurement_refs, measurement_proportions):
-        """Sets the input values, must not be called before start
+        """
+        Sets the input values, must not be called before start
 
         :param output_refs: the indices of the inputs that will be used
         """
@@ -361,10 +366,11 @@ class Processor:
         return [i.name for i in self.inputs]
 
     def _set_inputs(self, input_refs, measurement_proportions, measurement_refs):
-        """Sets what input values will be shown
+        """
+        Sets what input values will be shown
 
         Should only be called by internal functions.
-        Does not change the actual input values.
+        Does not change the actual input values in the process.
         """
         self.input_refs = input_refs
         self.measurement_refs = measurement_refs
@@ -372,7 +378,8 @@ class Processor:
         self.actual_input_refs = [self.inputs[ref].valueReference for ref in input_refs]
 
     def set_outputs(self, output_refs):
-        """Sets the output values, must not be called before start
+        """
+        Sets the output values, must not be called before start
 
         :param input_refs: the indices of the inputs that will be used
         :param measurement_refs: the indices of the input data values that will be used.
@@ -385,10 +392,11 @@ class Processor:
         return [o.name for o in self.outputs]
 
     def _set_outputs(self, output_refs):
-        """Sets what output values will be shown
+        """
+        Sets what output values will be shown
 
         Should only be called by internal functions.
-        Does not change the actual output values.
+        Does not change the actual output values in the process.
         """
         if output_refs == 'all':
             self.output_refs = list(range(len(self.outputs)))

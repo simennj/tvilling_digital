@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""The start point of the application."""
 import argparse
 import importlib
 import logging
@@ -11,7 +12,8 @@ from src.server import init_app
 class Settings:
     """A class for holding the application settings"""
     def __init__(self, settings_module):
-        """Sets attributes to be all uppercase attributes from module
+        """
+        Sets attributes to be all uppercase attributes from module
 
         :param settings_module: the module to import setting attributes from
         """
@@ -22,14 +24,12 @@ class Settings:
         self.__isfrozen = True
 
 
-def main():
-    # Define command line interface
-    parser = argparse.ArgumentParser(description='Run server')
-    parser.add_argument('settings',
-                        help='The module to import settings attributes from',
-                        nargs='?', default='settings')
-    # Retrieve command line arguments
-    args = parser.parse_args()
+def main(args):
+    """
+    Start the application.
+
+    Will be called with command line args if the file is run as a script
+    """
     # Import settings
     settings_module = importlib.import_module(args.settings)
     settings = Settings(settings_module)
@@ -42,4 +42,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # Define command line interface
+    parser = argparse.ArgumentParser(description='Run server')
+    parser.add_argument('settings',
+                        help='The module to import settings attributes from',
+                        nargs='?', default='settings')
+    main(parser.parse_args())

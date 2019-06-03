@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src package &#8212; Tvilling Digital  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.blueprints package" href="src.blueprints.html" />
+    <link rel="prev" title="src" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-package">
+<h1>src package<a class="headerlink" href="#src-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src.blueprints.html">src.blueprints package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#module-src.blueprints.views">src.blueprints.views module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#module-src.blueprints">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.clients.html">src.clients package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.clients.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients.models">src.clients.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients.views">src.clients.views module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.datasources.html">src.datasources package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.datasources.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources.models">src.datasources.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources.views">src.datasources.views module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.fmus.html">src.fmus package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.fmus.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.fmus.html#module-src.fmus.views">src.fmus.views module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.fmus.html#module-src.fmus">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.processors.html">src.processors package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.processors.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors.models">src.processors.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors.views">src.processors.views module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.connections">
+<span id="src-connections-module"></span><h2>src.connections module<a class="headerlink" href="#module-src.connections" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.connections.Consumer">
+<em class="property">class </em><code class="sig-prename descclassname">src.connections.</code><code class="sig-name descname">Consumer</code><span class="sig-paren">(</span><em class="sig-param">loop: asyncio.events.AbstractEventLoop</em><span class="sig-paren">)</span><a class="headerlink" href="#src.connections.Consumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="src.connections.Simulation">
+<em class="property">class </em><code class="sig-prename descclassname">src.connections.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param">loop: asyncio.events.AbstractEventLoop</em>, <em class="sig-param">path: str</em>, <em class="sig-param">byte_format: str</em>, <em class="sig-param">frequency_ms=100.0</em><span class="sig-paren">)</span><a class="headerlink" href="#src.connections.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.connections.Consumer" title="src.connections.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">src.connections.Consumer</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">src.connections.Producer</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.kafka">
+<span id="src-kafka-module"></span><h2>src.kafka module<a class="headerlink" href="#module-src.kafka" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.kafka.consume_from_kafka">
+<em class="property">async </em><code class="sig-prename descclassname">src.kafka.</code><code class="sig-name descname">consume_from_kafka</code><span class="sig-paren">(</span><em class="sig-param">app: aiohttp.web_app.Application</em><span class="sig-paren">)</span><a class="headerlink" href="#src.kafka.consume_from_kafka" title="Permalink to this definition">¶</a></dt>
+<dd><p>asdf</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.logtest">
+<span id="src-logtest-module"></span><h2>src.logtest module<a class="headerlink" href="#module-src.logtest" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.logtest.MyHandler">
+<em class="property">class </em><code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">MyHandler</code><a class="headerlink" href="#src.logtest.MyHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple handler for logging events. It runs in the listener process and
+dispatches events to loggers based on the name in the received record,
+which then get dispatched, by the logging system, to the handlers
+configured for those loggers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.logtest.listener_process">
+<code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">listener_process</code><span class="sig-paren">(</span><em class="sig-param">q</em>, <em class="sig-param">stop_event</em>, <em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#src.logtest.listener_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>This could be done in the main process, but is just done in a separate
+process for illustrative purposes.</p>
+<p>This initialises logging according to the specified configuration,
+starts the listener and waits for the main process to signal completion
+via the event. The listener is then stopped, and the process exits.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.logtest.worker_process">
+<code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">worker_process</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#src.logtest.worker_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>A number of these are spawned for the purpose of illustration. In
+practice, they could be a heterogeneous bunch of processes rather than
+ones which are identical to each other.</p>
+<p>This initialises logging according to the specified configuration,
+and logs a hundred messages with random levels to randomly selected
+loggers.</p>
+<p>A small sleep is added to allow other processes a chance to run. This
+is not strictly needed, but it mixes the output from the different
+processes a bit more than if it’s left out.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.server">
+<span id="src-server-module"></span><h2>src.server module<a class="headerlink" href="#module-src.server" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.simulation">
+<span id="src-simulation-module"></span><h2>src.simulation module<a class="headerlink" href="#module-src.simulation" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.utils">
+<span id="src-utils-module"></span><h2>src.utils module<a class="headerlink" href="#module-src.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.utils.RouteTableDefDocs">
+<em class="property">class </em><code class="sig-prename descclassname">src.utils.</code><code class="sig-name descname">RouteTableDefDocs</code><a class="headerlink" href="#src.utils.RouteTableDefDocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.web_routedef.RouteTableDef</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.utils.dumps">
+<code class="sig-prename descclassname">src.utils.</code><code class="sig-name descname">dumps</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">*</em>, <em class="sig-param">skipkeys=False</em>, <em class="sig-param">ensure_ascii=True</em>, <em class="sig-param">check_circular=True</em>, <em class="sig-param">allow_nan=True</em>, <em class="sig-param">cls=None</em>, <em class="sig-param">indent=None</em>, <em class="sig-param">separators=None</em>, <em class="sig-param">default=&lt;function make_serializable&gt;</em>, <em class="sig-param">sort_keys=False</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#src.utils.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version of json.dumps that uses make serializable recursively to make objects serializable</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.views">
+<span id="src-views-module"></span><h2>src.views module<a class="headerlink" href="#module-src.views" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.views.history">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">history</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get historic data from the given topic</p>
+<p>get params:
+- start: the start timestamp as milliseconds since 00:00:00 Thursday, 1 January 1970
+- end: (optinoal) the end timestamp as milliseconds since 00:00:00 Thursday, 1 January 1970</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.index">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The API index</p>
+<p>A standard HTTP request will return a sample page with a simple example of api use.
+A WebSocket request will initiate a websocket connection making it possible to retrieve measurement and simulation data.</p>
+<p>Available endpoints are
+- /client for information about the clients websocket connections
+- /datasources/ for measurement data sources
+- /processors/ for running processors on the data
+- /blueprints/ for the blueprints used to create processors
+- /fmus/ for available FMUs (for the fmu blueprint)
+- /models/ for available models (for the fedem blueprint)
+- /topics/ for all available data sources (datasources and processors)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.models">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">models</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.models" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available models for the fedem blueprint</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.session_endpoint">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">session_endpoint</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.session_endpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only returns a session cookie</p>
+<p>Generates and returns a session cookie.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.subscribe">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">subscribe</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to the given topic</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.topics">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">topics</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.topics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists the available data sources for plotting or processors</p>
+<p>Append the id of a topic to get details about only that topic
+Append the id of a topic and /subscribe to subscribe to a topic
+Append the id of a topic and /unsubscribe to unsubscribe to a topic
+Append the id of a topic and /history to get historic data from a topic</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.topics_detail">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">topics_detail</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.topics_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show a single topic</p>
+<p>Append /subscribe to subscribe to the topic
+Append /unsubscribe to unsubscribe to the topic
+Append /history to get historic data from a topic</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.views.unsubscribe">
+<em class="property">async </em><code class="sig-prename descclassname">src.views.</code><code class="sig-name descname">unsubscribe</code><span class="sig-paren">(</span><em class="sig-param">request: aiohttp.web_request.Request</em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe to the given topic</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Tvilling Digital</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">src</a></li>
+      <li>Next: <a href="src.blueprints.html" title="next chapter">src.blueprints package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Simen Norderud Jensen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

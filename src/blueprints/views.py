@@ -11,7 +11,8 @@ routes = RouteTableDefDocs()
 
 @routes.get('/blueprints/', name='blueprint_list')
 async def blueprint_list(request: web.Request):
-    """List all uploaded blueprints.
+    """
+    List all uploaded blueprints.
 
     Append a blueprint id to get more information about a listed blueprint.
     """
@@ -39,7 +40,8 @@ async def blueprint_detail(request: web.Request):
 
 
 async def retrieve_method_info(class_body, method_name, params_ignore=1) -> Tuple[str, List]:
-    """Retrieves docs and parameters from the method
+    """
+    Retrieves docs and parameters from the method
 
     :param class_body: the body of the class the method belongs to
     :param method_name: the name of the method

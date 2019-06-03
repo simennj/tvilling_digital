@@ -38,7 +38,8 @@ class UdpDatasource:
 
 def generate_catman_outputs(output_names: List[str], output_refs, single: bool = False) -> Tuple[
     List[str], List[int], str]:
-    """Generate ouput setup for a datasource that is using the Catman software
+    """
+    Generate ouput setup for a datasource that is using the Catman software
 
     :param single: true if the data from Catman is single precision (4 bytes each)
     :param output_names: a list of the names of the input data
@@ -54,7 +55,8 @@ class UdpReceiver(asyncio.DatagramProtocol):
     """Handles all UDP datasources"""
 
     def __init__(self, kafka_addr: str):
-        """Initializes the UdpReceiver with a kafka producer
+        """
+        Initializes the UdpReceiver with a kafka producer
 
         :param kafka_addr: the address that will be used to bootstrap kafka
         """
@@ -72,7 +74,8 @@ class UdpReceiver(asyncio.DatagramProtocol):
                    output_refs: List[int],
                    time_index: int
                    ) -> None:
-        """Creates a new datasource object and adds it to sources, overwriting if necessary
+        """
+        Creates a new datasource object and adds it to sources, overwriting if necessary
 
         :param source_id: the id to use for the datasource
         :param addr: the address the datasource will send from

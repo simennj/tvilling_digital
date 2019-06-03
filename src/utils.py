@@ -20,6 +20,7 @@ def make_serializable(o):
 
 
 dumps = functools.partial(json.dumps, default=make_serializable)
+dumps.__doc__ = """A version of json.dumps that uses make serializable recursively to make objects serializable"""
 
 
 async def find_in_dir(filename, parent_directory=''):
