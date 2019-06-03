@@ -161,7 +161,10 @@ async def processor_start(request: web.Request):
         raise web.HTTPBadRequest(reason=f'processor with id {processor_id} does not exist')
     processor_instance: Processor = request.app['processors'][processor_id]
     input_refs = await try_get_all(post, 'input_ref', int)
-    output_refs = await try_get_all(post, 'output_ref', int)
+    if post.get('output_ref', '') == 'all':
+        output_refs = 'all'
+    else:
+        output_refs = await try_get_all(post, 'output_ref', int)
     measurement_refs = await try_get_all(post, 'measurement_ref', int)
     measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
     try:
