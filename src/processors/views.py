@@ -96,29 +96,41 @@ async def processor_create(request: web.Request):
         kafka_server=request.app['settings'].KAFKA_SERVER,
         topic=topic,
     )
-    thread = Thread(target=get_initialization_results, kwargs=dict(
-        app=request.app,
+    init_results = await retrieve_processor_status(request.app, processor_instance)
+    request.app['processors'][processor_id] = processor_instance
+    path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
+    with open(path, 'w') as f:
+        f.write(dumps(processor_instance))
+    raise web.HTTPCreated(body=dumps(init_results), content_type='application/json')
+
+
+async def retrieve_processor_status(app, processor_instance):
+    """
+    Retrieve the initialization results from a processor
+
+    Will put the results in app['topics'] and return them.
+    """
+    thread = Thread(target=_retrieve_processor_status_target, kwargs=dict(
+        app=app,
         processor_instance=processor_instance
     ))
     thread.start()
     while thread.is_alive():
         await asyncio.sleep(.1)
     thread.join()
-    request.app['processors'][processor_id] = processor_instance
-    path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
-    with open(path, 'w') as f:
-        f.write(dumps(processor_instance))
-    raise web.HTTPCreated()
+    status = app['topics'][processor_instance.topic]
+    if 'error' in status:
+        del app['topics'][processor_instance.topic]
+    return status
 
 
-def get_initialization_results(app, processor_instance):
+def _retrieve_processor_status_target(app, processor_instance):
     """
-    Get the initialization results from a processor
+    The target function for retrieve_processor_status thread
 
-    Is meant to be run as a target in a Thread.
     Will put the results in app['topics'].
     """
-    results = processor_instance.retrieve_init_results()
+    results = processor_instance.retrieve_status()
     app['topics'][processor_instance.topic] = results
 
 
@@ -171,19 +183,25 @@ async def processor_start(request: web.Request):
         start_params = json.loads(post.get('start_params', '{}'))
     except JSONDecodeError:
         raise web.HTTPUnprocessableEntity(reason='Could not process start_params as json')
-    # Run in a seperate thread to prevent connection from blocking the main thread
-    start_results = processor_instance.start(
-        input_refs=input_refs,
-        measurement_refs=measurement_refs,
-        measurement_proportions=measurement_proportions,
-        output_refs=output_refs,
-        start_params=start_params
-    )
-    request.app['topics'][processor_instance.topic] = start_results
+    if processor_instance.started:
+        raise web.HTTPUnprocessableEntity(reason='Processor has already been started')
+    try:
+        processor_instance.start(
+            input_refs=input_refs,
+            measurement_refs=measurement_refs,
+            measurement_proportions=measurement_proportions,
+            output_refs=output_refs,
+            start_params=start_params
+        )
+    except:
+        raise web.HTTPUnprocessableEntity(reason=f'The selected Processor instance is not startable (probably crashed)')
+    start_results = await retrieve_processor_status(request.app, processor_instance)
     path = os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id + '.json')
     with open(path, 'w') as f:
         f.write(dumps(processor_instance))
-    raise web.HTTPAccepted()
+    if 'error' in start_results:
+        raise web.HTTPServerError(body=dumps(start_results), content_type='application/json')
+    raise web.HTTPAccepted(body=dumps(start_results), content_type='application/json')
 
 
 @routes.get('/processors/{id}', name='processor_detail')
@@ -197,6 +215,7 @@ async def processor_detail(request: web.Request):
     Append /delete to delete the processor
     Append /outputs to get the outputs of the processor
     Append /inputs to get the inputs of the processor
+    Append /status to update and get the status of the processor
     """
 
     processor_id = request.match_info['id']
@@ -209,8 +228,17 @@ async def processor_detail(request: web.Request):
     kwargs['initialized'] = False
     kwargs['started'] = False
     return web.json_response(kwargs, dumps=dumps)
-    # with open(os.path.join(request.app['settings'].PROCESSOR_DIR, processor_id)) as f:
-    #     return web.json_response(text=f.read(), dumps=dumps)
+
+
+@routes.get('/processors/{id}/status', name='processor_status')
+async def processor_status(request: web.Request):
+    """Updates and returns the current status of the processor"""
+    processor_id = request.match_info['id']
+    if processor_id not in request.app['processors']:
+        raise web.HTTPNotFound()
+    processor_instance = request.app['processors'][processor_id]
+    status = await retrieve_processor_status(request.app, processor_instance)
+    return web.json_response(status, dumps=dumps)
 
 
 @routes.get('/processors/{id}/subscribe', name='processor_subscribe')
@@ -271,7 +299,10 @@ async def processor_outputs_update(request: web.Request):
         output_names = processor.set_outputs('all')
     else:
         output_refs = await try_get_all(post, 'output_ref', int)
-        output_names = processor.set_outputs(output_refs)
+        try:
+            output_names = processor.set_outputs(output_refs)
+        except:
+            raise web.HTTPUnprocessableEntity(reason='The selected processor does not seem to be running.')
     request.app['topics'][processor.topic]['byte_format'] = processor.byte_format
     request.app['topics'][processor.topic]['output_names'] = output_names
     raise web.HTTPAccepted()
@@ -299,7 +330,10 @@ async def processor_inputs_update(request: web.Request):
     measurement_refs = await try_get_all(post, 'measurement_ref', int)
     measurement_proportions = await try_get_all(post, 'measurement_proportion', float)
     processor = request.app['processors'][processor_id]
-    input_names = processor.set_inputs(input_refs, measurement_refs, measurement_proportions)
+    try:
+        input_names = processor.set_inputs(input_refs, measurement_refs, measurement_proportions)
+    except:
+        raise web.HTTPUnprocessableEntity(reason='The selected processor does not seem to be running.')
     request.app['topics'][processor.topic]['input_names'] = input_names
     raise web.HTTPAccepted()
 

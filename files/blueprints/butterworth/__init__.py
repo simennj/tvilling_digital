@@ -13,12 +13,11 @@ class P:
 
     def __init__(self, sample_spacing=.01, buffer_size=500, cutoff_frequency=10, btype='hp', order=10):
         """
-        @startuml
-        simen --> master
-        @enduml
-
         :param sample_spacing: the time to be used between each sample
-        :param window: the amount of samples to be used for each calculation
+        :param buffer_size: the amount of samples to be used for each calculation
+        :param cutoff_frequency: the frequency to filter on
+        :param btype: the filter type "hp" for highpass, "lp" for lowpass
+        :param order: the order to use for the butterworth filter
         """
         self.t = 0
         self.sample_spacing = float(sample_spacing)
@@ -43,7 +42,7 @@ class P:
             return [self.output_buffer[self.index]]
 
     def get_time(self):
-        return self.time_buffers[self.current_buffer, self.index]
+        return self.time_buffers[(self.current_buffer + 1) % 2, self.index]
 
     def step(self, t):
         if self.t <= self.sample_spacing and t > 0:

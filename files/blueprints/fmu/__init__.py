@@ -56,17 +56,17 @@ class P:
         self.file = file
         self.fmu = None
 
-    def start(self, start_time, time_step_input_ref=-1):
+    def start(self, start_time, time_step_input_ref='-1'):
         """
         Starts the FMU
 
         :param start_time: not used in this blueprint
         :param time_step_input_ref: optional value for custom time_step input
         """
-        if time_step_input_ref >= 0:
-            self.time_step_input_ref = time_step_input_ref
-        with open(os.devnull, 'w') as outfile:
-            os.dup2(outfile.fileno(), 1)
+        if int(time_step_input_ref) >= 0:
+            self.time_step_input_ref = int(time_step_input_ref)
+        # with open(os.devnull, 'w') as outfile:
+        #     os.dup2(outfile.fileno(), 1)
         self.fmu = fmi2.FMU2Slave(
             guid=self.model_description.guid,
             unzipDirectory=fmpy.extract(self.file, os.path.realpath('./')),

@@ -1,16 +1,14 @@
 import os
-from dataclasses import dataclass
+from collections import namedtuple
 from typing import List
 
-from files.blueprints.fedem.fedemdll.vpmSolverRun import VpmSolverRun
+# from files.blueprints.fedem.fedemdll.vpmSolverRun import VpmSolverRun
 import numpy as np
 
-
-@dataclass
-class Variable:
-    name: str
-    valueReference: int
-    value: float = 0
+Variable = namedtuple('Variable',
+                      ('name', 'valueReference', 'value'),
+                      defaults=(None, None, 0)
+                      )
 
 
 def extract_inputs(file):
@@ -50,7 +48,7 @@ class P:
         self.outputs = [
 
         ]
-        self.twin = VpmSolverRun(file_path) #TODO: mangler response_ folder eller noe sånt
+        # self.twin = VpmSolverRun(file_path) #TODO: mangler response_ folder eller noe sånt
         self.time_step = time_step
         self.last_twin_time = 0
         self.initial_values = {}
@@ -64,10 +62,10 @@ class P:
             self.initial_values_interpolated = False
 
         # Initialization of solver (Needed for fedem functions)
-        for n in range(2):
-            self.twin.solveNext()
-        self.calculate_compliance_matrix()
-        self.last_twin_time = self.twin.getCurrentTime()
+        # for n in range(2):
+        #     self.twin.solveNext()
+        # self.calculate_compliance_matrix()
+        # self.last_twin_time = self.twin.getCurrentTime()
 
     def set_inputs(self, input_refs, input_values):
         if not self.initial_values_interpolated:

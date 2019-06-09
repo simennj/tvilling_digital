@@ -11,10 +11,3 @@ src.fmus.views module
    :members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: src.fmus
-   :members:
-   :show-inheritance:

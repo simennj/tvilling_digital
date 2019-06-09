@@ -17,11 +17,3 @@ src.clients.views module
 .. automodule:: src.clients.views
    :members:
    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: src.clients
-   :members:
-   :show-inheritance:

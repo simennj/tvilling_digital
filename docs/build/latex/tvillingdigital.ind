@@ -5,159 +5,146 @@
 \let\spxextra \sphinxstyleindexextra
 
   \bigletter B
-  \item \spxentry{blueprint\_detail()}\spxextra{in module src.blueprints.views}, \hyperpage{1}
-  \item \spxentry{blueprint\_list()}\spxextra{in module src.blueprints.views}, \hyperpage{1}
+  \item \spxentry{blueprint\_detail()}\spxextra{in module src.blueprints.views}, \hyperpage{3}
+  \item \spxentry{blueprint\_list()}\spxextra{in module src.blueprints.views}, \hyperpage{3}
 
   \indexspace
   \bigletter C
-  \item \spxentry{Client}\spxextra{class in src.clients.models}, \hyperpage{2}
-  \item \spxentry{client()}\spxextra{in module src.clients.views}, \hyperpage{2}
-  \item \spxentry{close()}\spxextra{src.clients.models.Client method}, \hyperpage{2}
+  \item \spxentry{Client}\spxextra{class in src.clients.models}, \hyperpage{4}
+  \item \spxentry{client()}\spxextra{in module src.clients.views}, \hyperpage{4}
+  \item \spxentry{close()}\spxextra{src.clients.models.Client method}, \hyperpage{4}
   \item \spxentry{connection\_lost()}\spxextra{src.datasources.models.UdpReceiver method}, 
-		\hyperpage{2}
+		\hyperpage{4}
   \item \spxentry{connection\_made()}\spxextra{src.datasources.models.UdpReceiver method}, 
-		\hyperpage{3}
-  \item \spxentry{consume\_from\_kafka()}\spxextra{in module src.kafka}, \hyperpage{9}
-  \item \spxentry{Consumer}\spxextra{class in src.connections}, \hyperpage{8}
+		\hyperpage{5}
+  \item \spxentry{consume\_from\_kafka()}\spxextra{in module src.kafka}, \hyperpage{10}
 
   \indexspace
   \bigletter D
   \item \spxentry{datagram\_received()}\spxextra{src.datasources.models.UdpReceiver method}, 
-		\hyperpage{3}
-  \item \spxentry{datasource\_create()}\spxextra{in module src.datasources.views}, \hyperpage{3}
-  \item \spxentry{datasource\_delete()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{datasource\_detail()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{datasource\_list()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{datasource\_start()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{datasource\_stop()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{datasource\_subscribe()}\spxextra{in module src.datasources.views}, \hyperpage{4}
+		\hyperpage{5}
+  \item \spxentry{datasource\_create()}\spxextra{in module src.datasources.views}, \hyperpage{5}
+  \item \spxentry{datasource\_delete()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{datasource\_detail()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{datasource\_list()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{datasource\_start()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{datasource\_stop()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{datasource\_subscribe()}\spxextra{in module src.datasources.views}, \hyperpage{6}
   \item \spxentry{datasource\_unsubscribe()}\spxextra{in module src.datasources.views}, 
-		\hyperpage{4}
-  \item \spxentry{dict\_repr()}\spxextra{src.clients.models.Client method}, \hyperpage{2}
-  \item \spxentry{dumps()}\spxextra{in module src.blueprints.views}, \hyperpage{1}
-  \item \spxentry{dumps()}\spxextra{in module src.clients.views}, \hyperpage{2}
-  \item \spxentry{dumps()}\spxextra{in module src.datasources.views}, \hyperpage{4}
-  \item \spxentry{dumps()}\spxextra{in module src.fmus.views}, \hyperpage{5}
-  \item \spxentry{dumps()}\spxextra{in module src.processors.views}, \hyperpage{7}
-  \item \spxentry{dumps()}\spxextra{in module src.utils}, \hyperpage{9}
+		\hyperpage{6}
+  \item \spxentry{dict\_repr()}\spxextra{src.clients.models.Client method}, \hyperpage{4}
+  \item \spxentry{dumps()}\spxextra{in module src.blueprints.views}, \hyperpage{3}
+  \item \spxentry{dumps()}\spxextra{in module src.clients.views}, \hyperpage{4}
+  \item \spxentry{dumps()}\spxextra{in module src.datasources.views}, \hyperpage{6}
+  \item \spxentry{dumps()}\spxextra{in module src.fmus.views}, \hyperpage{7}
+  \item \spxentry{dumps()}\spxextra{in module src.processors.views}, \hyperpage{9}
+  \item \spxentry{dumps()}\spxextra{in module src.utils}, \hyperpage{11}
 
   \indexspace
   \bigletter E
   \item \spxentry{error\_received()}\spxextra{src.datasources.models.UdpReceiver method}, 
-		\hyperpage{3}
+		\hyperpage{5}
 
   \indexspace
   \bigletter F
-  \item \spxentry{fmu\_detail()}\spxextra{in module src.fmus.views}, \hyperpage{5}
-  \item \spxentry{fmu\_list()}\spxextra{in module src.fmus.views}, \hyperpage{5}
-  \item \spxentry{fmu\_model()}\spxextra{in module src.fmus.views}, \hyperpage{5}
-  \item \spxentry{fmu\_models()}\spxextra{in module src.fmus.views}, \hyperpage{5}
+  \item \spxentry{files.blueprints.fmu}\spxextra{module}, \hyperpage{13}
+  \item \spxentry{fmu\_detail()}\spxextra{in module src.fmus.views}, \hyperpage{7}
+  \item \spxentry{fmu\_list()}\spxextra{in module src.fmus.views}, \hyperpage{7}
+  \item \spxentry{fmu\_model()}\spxextra{in module src.fmus.views}, \hyperpage{7}
+  \item \spxentry{fmu\_models()}\spxextra{in module src.fmus.views}, \hyperpage{7}
 
   \indexspace
   \bigletter G
   \item \spxentry{generate\_catman\_outputs()}\spxextra{in module src.datasources.models}, 
-		\hyperpage{3}
-  \item \spxentry{get\_initialization\_results()}\spxextra{in module src.processors.views}, 
-		\hyperpage{7}
+		\hyperpage{5}
   \item \spxentry{get\_sources()}\spxextra{src.datasources.models.UdpReceiver method}, 
-		\hyperpage{3}
+		\hyperpage{5}
 
   \indexspace
   \bigletter H
-  \item \spxentry{history()}\spxextra{in module src.views}, \hyperpage{9}
+  \item \spxentry{history()}\spxextra{in module src.views}, \hyperpage{11}
 
   \indexspace
   \bigletter I
-  \item \spxentry{index()}\spxextra{in module src.views}, \hyperpage{9}
-
-  \indexspace
-  \bigletter L
-  \item \spxentry{listener\_process()}\spxextra{in module src.logtest}, \hyperpage{9}
+  \item \spxentry{index()}\spxextra{in module src.views}, \hyperpage{11}
 
   \indexspace
   \bigletter M
-  \item \spxentry{main}\spxextra{module}, \hyperpage{10}
-  \item \spxentry{main()}\spxextra{in module main}, \hyperpage{10}
-  \item \spxentry{models()}\spxextra{in module src.views}, \hyperpage{10}
-  \item \spxentry{MyHandler}\spxextra{class in src.logtest}, \hyperpage{9}
+  \item \spxentry{main}\spxextra{module}, \hyperpage{1}
+  \item \spxentry{main()}\spxextra{in module main}, \hyperpage{1}
+  \item \spxentry{models()}\spxextra{in module src.views}, \hyperpage{11}
 
   \indexspace
   \bigletter P
-  \item \spxentry{Processor}\spxextra{class in src.processors.models}, \hyperpage{5}
-  \item \spxentry{processor\_create()}\spxextra{in module src.processors.views}, \hyperpage{7}
-  \item \spxentry{processor\_delete()}\spxextra{in module src.processors.views}, \hyperpage{7}
-  \item \spxentry{processor\_detail()}\spxextra{in module src.processors.views}, \hyperpage{7}
+  \item \spxentry{P}\spxextra{class in files.blueprints.fmu}, \hyperpage{13}
+  \item \spxentry{prepare\_outputs()}\spxextra{in module files.blueprints.fmu}, \hyperpage{13}
+  \item \spxentry{Processor}\spxextra{class in src.processors.models}, \hyperpage{7}
+  \item \spxentry{processor\_create()}\spxextra{in module src.processors.views}, \hyperpage{9}
+  \item \spxentry{processor\_delete()}\spxextra{in module src.processors.views}, \hyperpage{9}
+  \item \spxentry{processor\_detail()}\spxextra{in module src.processors.views}, \hyperpage{9}
   \item \spxentry{processor\_inputs\_update()}\spxextra{in module src.processors.views}, 
-		\hyperpage{7}
-  \item \spxentry{processor\_list()}\spxextra{in module src.processors.views}, \hyperpage{7}
+		\hyperpage{9}
+  \item \spxentry{processor\_list()}\spxextra{in module src.processors.views}, \hyperpage{9}
   \item \spxentry{processor\_outputs\_update()}\spxextra{in module src.processors.views}, 
-		\hyperpage{8}
-  \item \spxentry{processor\_process()}\spxextra{in module src.processors.models}, \hyperpage{6}
-  \item \spxentry{processor\_start()}\spxextra{in module src.processors.views}, \hyperpage{8}
-  \item \spxentry{processor\_stop()}\spxextra{in module src.processors.views}, \hyperpage{8}
-  \item \spxentry{processor\_subscribe()}\spxextra{in module src.processors.views}, \hyperpage{8}
-  \item \spxentry{processor\_unsubscribe()}\spxextra{in module src.processors.views}, \hyperpage{8}
-  \item \spxentry{processors\_clear()}\spxextra{in module src.processors.views}, \hyperpage{8}
+		\hyperpage{10}
+  \item \spxentry{processor\_process()}\spxextra{in module src.processors.models}, \hyperpage{8}
+  \item \spxentry{processor\_start()}\spxextra{in module src.processors.views}, \hyperpage{10}
+  \item \spxentry{processor\_status()}\spxextra{in module src.processors.views}, \hyperpage{10}
+  \item \spxentry{processor\_stop()}\spxextra{in module src.processors.views}, \hyperpage{10}
+  \item \spxentry{processor\_subscribe()}\spxextra{in module src.processors.views}, \hyperpage{10}
+  \item \spxentry{processor\_unsubscribe()}\spxextra{in module src.processors.views}, 
+		\hyperpage{10}
+  \item \spxentry{processors\_clear()}\spxextra{in module src.processors.views}, \hyperpage{10}
 
   \indexspace
   \bigletter R
-  \item \spxentry{receive()}\spxextra{src.clients.models.Client method}, \hyperpage{2}
-  \item \spxentry{retrieve\_init\_results()}\spxextra{src.processors.models.Processor method}, 
-		\hyperpage{5}
-  \item \spxentry{retrieve\_method\_info()}\spxextra{in module src.blueprints.views}, \hyperpage{1}
-  \item \spxentry{RouteTableDefDocs}\spxextra{class in src.utils}, \hyperpage{9}
+  \item \spxentry{receive()}\spxextra{src.clients.models.Client method}, \hyperpage{4}
+  \item \spxentry{retrieve\_method\_info()}\spxextra{in module src.blueprints.views}, \hyperpage{3}
+  \item \spxentry{retrieve\_processor\_status()}\spxextra{in module src.processors.views}, 
+		\hyperpage{10}
+  \item \spxentry{retrieve\_status()}\spxextra{src.processors.models.Processor method}, 
+		\hyperpage{7}
+  \item \spxentry{RouteTableDefDocs}\spxextra{class in src.utils}, \hyperpage{11}
 
   \indexspace
   \bigletter S
-  \item \spxentry{session\_endpoint()}\spxextra{in module src.views}, \hyperpage{10}
-  \item \spxentry{set\_inputs()}\spxextra{src.processors.models.Processor method}, \hyperpage{5}
-  \item \spxentry{set\_outputs()}\spxextra{src.processors.models.Processor method}, \hyperpage{5}
-  \item \spxentry{set\_source()}\spxextra{src.datasources.models.UdpReceiver method}, \hyperpage{3}
-  \item \spxentry{Settings}\spxextra{class in main}, \hyperpage{10}
-  \item \spxentry{Simulation}\spxextra{class in src.connections}, \hyperpage{8}
-  \item \spxentry{src}\spxextra{module}, \hyperpage{10}
-  \item \spxentry{src.blueprints}\spxextra{module}, \hyperpage{1}
-  \item \spxentry{src.blueprints.views}\spxextra{module}, \hyperpage{1}
-  \item \spxentry{src.clients}\spxextra{module}, \hyperpage{2}
-  \item \spxentry{src.clients.models}\spxextra{module}, \hyperpage{2}
-  \item \spxentry{src.clients.views}\spxextra{module}, \hyperpage{2}
-  \item \spxentry{src.connections}\spxextra{module}, \hyperpage{8}
-  \item \spxentry{src.datasources}\spxextra{module}, \hyperpage{4}
-  \item \spxentry{src.datasources.models}\spxextra{module}, \hyperpage{2}
-  \item \spxentry{src.datasources.views}\spxextra{module}, \hyperpage{3}
-  \item \spxentry{src.fmus}\spxextra{module}, \hyperpage{5}
-  \item \spxentry{src.fmus.views}\spxextra{module}, \hyperpage{5}
-  \item \spxentry{src.kafka}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{src.logtest}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{src.processors}\spxextra{module}, \hyperpage{8}
-  \item \spxentry{src.processors.models}\spxextra{module}, \hyperpage{5}
-  \item \spxentry{src.processors.views}\spxextra{module}, \hyperpage{7}
-  \item \spxentry{src.server}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{src.simulation}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{src.utils}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{src.views}\spxextra{module}, \hyperpage{9}
-  \item \spxentry{start()}\spxextra{src.processors.models.Processor method}, \hyperpage{6}
-  \item \spxentry{stop()}\spxextra{src.processors.models.Processor method}, \hyperpage{6}
-  \item \spxentry{subscribe()}\spxextra{in module src.views}, \hyperpage{10}
+  \item \spxentry{session\_endpoint()}\spxextra{in module src.views}, \hyperpage{11}
+  \item \spxentry{set\_inputs()}\spxextra{src.processors.models.Processor method}, \hyperpage{7}
+  \item \spxentry{set\_outputs()}\spxextra{src.processors.models.Processor method}, \hyperpage{7}
+  \item \spxentry{set\_source()}\spxextra{src.datasources.models.UdpReceiver method}, \hyperpage{5}
+  \item \spxentry{Settings}\spxextra{class in main}, \hyperpage{1}
+  \item \spxentry{src}\spxextra{module}, \hyperpage{12}
+  \item \spxentry{src.blueprints.views}\spxextra{module}, \hyperpage{3}
+  \item \spxentry{src.clients.models}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{src.clients.views}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{src.datasources.models}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{src.datasources.views}\spxextra{module}, \hyperpage{5}
+  \item \spxentry{src.fmus.views}\spxextra{module}, \hyperpage{7}
+  \item \spxentry{src.kafka}\spxextra{module}, \hyperpage{10}
+  \item \spxentry{src.processors.models}\spxextra{module}, \hyperpage{7}
+  \item \spxentry{src.processors.views}\spxextra{module}, \hyperpage{9}
+  \item \spxentry{src.server}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{src.utils}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{src.views}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{start()}\spxextra{files.blueprints.fmu.P method}, \hyperpage{13}
+  \item \spxentry{start()}\spxextra{src.processors.models.Processor method}, \hyperpage{8}
+  \item \spxentry{stop()}\spxextra{src.processors.models.Processor method}, \hyperpage{8}
+  \item \spxentry{subscribe()}\spxextra{in module src.views}, \hyperpage{11}
 
   \indexspace
   \bigletter T
-  \item \spxentry{topics()}\spxextra{in module src.views}, \hyperpage{10}
-  \item \spxentry{topics\_detail()}\spxextra{in module src.views}, \hyperpage{10}
-  \item \spxentry{try\_get\_source()}\spxextra{in module src.datasources.views}, \hyperpage{4}
+  \item \spxentry{topics()}\spxextra{in module src.views}, \hyperpage{11}
+  \item \spxentry{topics\_detail()}\spxextra{in module src.views}, \hyperpage{11}
+  \item \spxentry{try\_get\_source()}\spxextra{in module src.datasources.views}, \hyperpage{6}
 
   \indexspace
   \bigletter U
-  \item \spxentry{UdpDatasource}\spxextra{class in src.datasources.models}, \hyperpage{2}
-  \item \spxentry{UdpReceiver}\spxextra{class in src.datasources.models}, \hyperpage{2}
-  \item \spxentry{unsubscribe()}\spxextra{in module src.views}, \hyperpage{10}
+  \item \spxentry{UdpDatasource}\spxextra{class in src.datasources.models}, \hyperpage{4}
+  \item \spxentry{UdpReceiver}\spxextra{class in src.datasources.models}, \hyperpage{4}
+  \item \spxentry{unsubscribe()}\spxextra{in module src.views}, \hyperpage{11}
 
   \indexspace
   \bigletter V
-  \item \spxentry{Variable}\spxextra{class in src.processors.models}, \hyperpage{6}
-
-  \indexspace
-  \bigletter W
-  \item \spxentry{worker\_process()}\spxextra{in module src.logtest}, \hyperpage{9}
+  \item \spxentry{Variable}\spxextra{class in src.processors.models}, \hyperpage{8}
 
 \end{sphinxtheindex}

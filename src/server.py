@@ -9,14 +9,14 @@ from aiohttp import web
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
 from src import views
+from src.blueprints import views as blueprints_views
 from src.clients import views as client_views
 from src.clients.models import Client
 from src.datasources import views as datasource_views
 from src.datasources.models import UdpReceiver
 from src.fmus import views as fmu_views
-from src.processors import views as processor_views
-from src.blueprints import views as blueprints_views
 from src.kafka import consume_from_kafka
+from src.processors import views as processor_views
 from src.processors.models import Processor
 
 logger = logging.getLogger(__name__)
@@ -64,7 +64,8 @@ def init_app(settings) -> web.Application:
     for route in list(app.router.routes()):
         cors.add(route)
 
-    # TODO: make usable over multiple application instances (scaling)?
+    # TODO: these should be switched out with something that is not instance exclusive to enable horizontal scaling
+    # Redis could for example be a viable alternative
     app['clients']: Dict[str, Client] = {}
     app['processors']: Dict[str, Processor] = {}
     app['subscribers'] = defaultdict(set)

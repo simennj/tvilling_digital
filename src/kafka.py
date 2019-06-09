@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import struct
 from typing import Dict, List
 
 import aiokafka
@@ -11,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 async def consume_from_kafka(app: web.Application):
+    """asdf"""
     consumer = aiokafka.AIOKafkaConsumer(
         loop=asyncio.get_event_loop(),
         bootstrap_servers=app['settings'].KAFKA_SERVER

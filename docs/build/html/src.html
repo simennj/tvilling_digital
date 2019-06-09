@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="src.blueprints package" href="src.blueprints.html" />
-    <link rel="prev" title="src" href="modules.html" />
+      <link href="main.html" rel="prev" title="main module"/>
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,34 +41,29 @@
 <li class="toctree-l1"><a class="reference internal" href="src.blueprints.html">src.blueprints package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#module-src.blueprints.views">src.blueprints.views module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.blueprints.html#module-src.blueprints">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.clients.html">src.clients package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.clients.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients.models">src.clients.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients.views">src.clients.views module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.clients.html#module-src.clients">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.datasources.html">src.datasources package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.datasources.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources.models">src.datasources.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources.views">src.datasources.views module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.datasources.html#module-src.datasources">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.fmus.html">src.fmus package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.fmus.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.fmus.html#module-src.fmus.views">src.fmus.views module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.fmus.html#module-src.fmus">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.processors.html">src.processors package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.processors.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors.models">src.processors.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors.views">src.processors.views module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.processors.html#module-src.processors">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -76,21 +71,6 @@
 </div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-src.connections">
-<span id="src-connections-module"></span><h2>src.connections module<a class="headerlink" href="#module-src.connections" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="src.connections.Consumer">
-<em class="property">class </em><code class="sig-prename descclassname">src.connections.</code><code class="sig-name descname">Consumer</code><span class="sig-paren">(</span><em class="sig-param">loop: asyncio.events.AbstractEventLoop</em><span class="sig-paren">)</span><a class="headerlink" href="#src.connections.Consumer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-</dd></dl>
-
-<dl class="class">
-<dt id="src.connections.Simulation">
-<em class="property">class </em><code class="sig-prename descclassname">src.connections.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param">loop: asyncio.events.AbstractEventLoop</em>, <em class="sig-param">path: str</em>, <em class="sig-param">byte_format: str</em>, <em class="sig-param">frequency_ms=100.0</em><span class="sig-paren">)</span><a class="headerlink" href="#src.connections.Simulation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#src.connections.Consumer" title="src.connections.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">src.connections.Consumer</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">src.connections.Producer</span></code></p>
-</dd></dl>
-
 </div>
 <div class="section" id="module-src.kafka">
 <span id="src-kafka-module"></span><h2>src.kafka module<a class="headerlink" href="#module-src.kafka" title="Permalink to this headline">¶</a></h2>
@@ -101,48 +81,8 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-src.logtest">
-<span id="src-logtest-module"></span><h2>src.logtest module<a class="headerlink" href="#module-src.logtest" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="src.logtest.MyHandler">
-<em class="property">class </em><code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">MyHandler</code><a class="headerlink" href="#src.logtest.MyHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A simple handler for logging events. It runs in the listener process and
-dispatches events to loggers based on the name in the received record,
-which then get dispatched, by the logging system, to the handlers
-configured for those loggers.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.logtest.listener_process">
-<code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">listener_process</code><span class="sig-paren">(</span><em class="sig-param">q</em>, <em class="sig-param">stop_event</em>, <em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#src.logtest.listener_process" title="Permalink to this definition">¶</a></dt>
-<dd><p>This could be done in the main process, but is just done in a separate
-process for illustrative purposes.</p>
-<p>This initialises logging according to the specified configuration,
-starts the listener and waits for the main process to signal completion
-via the event. The listener is then stopped, and the process exits.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="src.logtest.worker_process">
-<code class="sig-prename descclassname">src.logtest.</code><code class="sig-name descname">worker_process</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#src.logtest.worker_process" title="Permalink to this definition">¶</a></dt>
-<dd><p>A number of these are spawned for the purpose of illustration. In
-practice, they could be a heterogeneous bunch of processes rather than
-ones which are identical to each other.</p>
-<p>This initialises logging according to the specified configuration,
-and logs a hundred messages with random levels to randomly selected
-loggers.</p>
-<p>A small sleep is added to allow other processes a chance to run. This
-is not strictly needed, but it mixes the output from the different
-processes a bit more than if it’s left out.</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-src.server">
 <span id="src-server-module"></span><h2>src.server module<a class="headerlink" href="#module-src.server" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-src.simulation">
-<span id="src-simulation-module"></span><h2>src.simulation module<a class="headerlink" href="#module-src.simulation" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-src.utils">
 <span id="src-utils-module"></span><h2>src.utils module<a class="headerlink" href="#module-src.utils" title="Permalink to this headline">¶</a></h2>
@@ -256,8 +196,19 @@ Append /history to get historic data from a topic</p>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+    <li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a>
+        <ul>
+            <li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#module-src.kafka">src.kafka module</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#module-src.server">src.server module</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#module-src.utils">src.utils module</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#module-src.views">src.views module</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="#module-src">Module contents</a></li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="blueprints.html">blueprints package</a></li>
 </ul>
 </li>
 </ul>
@@ -267,7 +218,7 @@ Append /history to get historic data from a topic</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">src</a><ul>
-      <li>Previous: <a href="modules.html" title="previous chapter">src</a></li>
+      <li>Previous: <a href="main.html" title="previous chapter">main module</a></li>
       <li>Next: <a href="src.blueprints.html" title="next chapter">src.blueprints package</a></li>
   </ul></li>
   </ul></li>

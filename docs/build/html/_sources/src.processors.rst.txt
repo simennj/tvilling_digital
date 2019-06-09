@@ -18,10 +18,3 @@ src.processors.views module
    :members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: src.processors
-   :members:
-   :show-inheritance:

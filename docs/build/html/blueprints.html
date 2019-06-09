@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <title>blueprints package &#8212; Tvilling Digital documentation</title>
+    <link href="_static/alabaster.css" rel="stylesheet" type="text/css"/>
+    <link href="_static/pygments.css" rel="stylesheet" type="text/css"/>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"
+            type="text/javascript"></script>
+    <script src="_static/jquery.js" type="text/javascript"></script>
+    <script src="_static/underscore.js" type="text/javascript"></script>
+    <script src="_static/doctools.js" type="text/javascript"></script>
+    <script src="_static/language_data.js" type="text/javascript"></script>
+    <link href="genindex.html" rel="index" title="Index"/>
+    <link href="search.html" rel="search" title="Search"/>
+    <link href="src.processors.html" rel="prev" title="src.processors package"/>
+
+    <link href="_static/custom.css" rel="stylesheet" type="text/css"/>
+
+
+    <meta content="width=device-width, initial-scale=0.9, maximum-scale=0.9" name="viewport"/>
+
+</head>
+<body>
+
+
+<div class="document">
+    <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+            <div class="body" role="main">
+
+                <div class="section" id="blueprints-package">
+                    <h1>blueprints package<a class="headerlink" href="#blueprints-package"
+                                             title="Permalink to this headline">¶</a></h1>
+                    <div class="section" id="submodules">
+                        <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a>
+                        </h2>
+                    </div>
+                    <div class="section" id="module-files.blueprints.fmu">
+                        <span id="blueprints-fmu-module"></span>
+                        <h2>blueprints.fmu module<a class="headerlink" href="#module-files.blueprints.fmu"
+                                                    title="Permalink to this headline">¶</a></h2>
+                        <p>A blueprint for running FMUs.</p>
+                        <dl class="class">
+                            <dt id="files.blueprints.fmu.P">
+                                <em class="property">class </em><code class="sig-prename descclassname">files.blueprints.fmu.</code><code
+                                    class="sig-name descname">P</code><span class="sig-paren">(</span><em
+                                    class="sig-param">fmu='testrig.fmu'</em><span class="sig-paren">)</span><a
+                                    class="headerlink" href="#files.blueprints.fmu.P"
+                                    title="Permalink to this definition">¶</a></dt>
+                            <dd><p>The interface between the application and the FMU</p>
+                                <dl class="method">
+                                    <dt id="files.blueprints.fmu.P.start">
+                                        <code class="sig-name descname">start</code><span class="sig-paren">(</span><em
+                                            class="sig-param">start_time</em>, <em class="sig-param">time_step_input_ref=-1</em><span
+                                            class="sig-paren">)</span><a class="headerlink"
+                                                                         href="#files.blueprints.fmu.P.start"
+                                                                         title="Permalink to this definition">¶</a></dt>
+                                    <dd><p>Starts the FMU</p>
+                                        <dl class="field-list simple">
+                                            <dt class="field-odd">Parameters</dt>
+                                            <dd class="field-odd">
+                                                <ul class="simple">
+                                                    <li><p><strong>start_time</strong> – not used in this blueprint</p>
+                                                    </li>
+                                                    <li><p><strong>time_step_input_ref</strong> – optional value for
+                                                        custom time_step input</p></li>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                    </dd>
+                                </dl>
+
+                            </dd>
+                        </dl>
+
+                        <dl class="function">
+                            <dt id="files.blueprints.fmu.prepare_outputs">
+                                <code class="sig-prename descclassname">files.blueprints.fmu.</code><code
+                                    class="sig-name descname">prepare_outputs</code><span class="sig-paren">(</span><em
+                                    class="sig-param">output_refs</em><span class="sig-paren">)</span><a
+                                    class="headerlink" href="#files.blueprints.fmu.prepare_outputs"
+                                    title="Permalink to this definition">¶</a></dt>
+                            <dd><p>Create FMUPy compatible value references and outputs buffer from output_refs</p>
+                                <dl class="field-list simple">
+                                    <dt class="field-odd">Parameters</dt>
+                                    <dd class="field-odd"><p><strong>output_refs</strong> – list of output indices</p>
+                                    </dd>
+                                    <dt class="field-even">Returns</dt>
+                                    <dd class="field-even"><p>tuple with outputs buffer and value reference list</p>
+                                    </dd>
+                                </dl>
+                            </dd>
+                        </dl>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+    <div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+        <div class="sphinxsidebarwrapper">
+            <h1 class="logo"><a href="index.html">Tvilling Digital</a></h1>
+
+
+            <h3>Navigation</h3>
+            <p class="caption"><span class="caption-text">Contents:</span></p>
+            <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a>
+                    <ul class="current">
+                        <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+                        <li class="toctree-l2"><a class="reference internal" href="src.html">src package</a></li>
+                        <li class="toctree-l2 current"><a class="current reference internal" href="#">blueprints
+                            package</a>
+                            <ul>
+                                <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a>
+                                </li>
+                                <li class="toctree-l3"><a class="reference internal"
+                                                          href="#module-files.blueprints.fmu">blueprints.fmu module</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="relations">
+                <h3>Related Topics</h3>
+                <ul>
+                    <li><a href="index.html">Documentation overview</a>
+                        <ul>
+                            <li><a href="modules.html">src</a>
+                                <ul>
+                                    <li>Previous: <a href="src.processors.html" title="previous chapter">src.processors
+                                        package</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="searchbox" role="search" style="display: none">
+                <h3 id="searchlabel">Quick search</h3>
+                <div class="searchformwrapper">
+                    <form action="search.html" class="search" method="get">
+                        <input aria-labelledby="searchlabel" name="q" type="text"/>
+                        <input type="submit" value="Go"/>
+                    </form>
+                </div>
+            </div>
+            <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+<div class="footer">
+    &copy;2019, Simen Norderud Jensen.
+
+    |
+    Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.0</a>
+    &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+    |
+    <a href="_sources/blueprints.rst.txt"
+       rel="nofollow">Page source</a>
+</div>
+
+
+</body>
+</html>

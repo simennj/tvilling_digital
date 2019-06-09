@@ -80,27 +80,26 @@ def processor_process(
     # Retrieves the inputs and outputs from the initialized processor
     if hasattr(processor_instance, 'outputs'):
         # Uses the outputs attribute from the processor if it exists
-        outputs = processor_instance.outputs
+        outputs = [Variable(v.valueReference, v.name) for v in processor_instance.outputs]
     else:
         # Otherwise it has to create outputs from output_names
         outputs = [Variable(i, name) for i, name in enumerate(processor_instance.output_names)]
     if hasattr(processor_instance, 'inputs'):
         # Uses the inputs attribute from the processor if it exists
-        inputs = processor_instance.inputs
+        inputs = [Variable(v.valueReference, v.name) for v in processor_instance.inputs]
     else:
         # Otherwise it has to create inputs from input_names
         inputs = [Variable(i, name) for i, name in enumerate(processor_instance.input_names)]
-    # Sends the input and output information retrieved to the main process
-    connection.send({'type': 'initialized', 'value': {
-        'outputs': [Variable(v.valueReference, v.name) for v in outputs],
-        'inputs': [Variable(v.valueReference, v.name) for v in inputs],
-        # Add a helper attribute that lists outputs that are part of a matrix
-        'matrix_outputs':
-            processor_instance.matrix_outputs
-            if hasattr(processor_instance, 'matrix_outputs')
-            else []
-    }})
 
+    # Add a helper attribute that lists outputs that are part of a matrix
+    matrix_outputs = (
+        processor_instance.matrix_outputs
+        if hasattr(processor_instance, 'matrix_outputs')
+        else []
+    )
+
+    initialized = True
+    started = False
     byte_format = '<d'
     output_refs = []
     input_refs = []
@@ -122,12 +121,34 @@ def processor_process(
             measurement_refs = value['measurement_refs']
             measurement_proportions = value['measurement_proportions']
             byte_format = '<' + 'd' * (len(output_refs) + 1)
+        elif msg['type'] == 'status':
+            connection.send({'type': 'status', 'value': {
+                'outputs': outputs,
+                'inputs': inputs,
+                # Add a helper attribute that lists outputs that are part of a matrix
+                'matrix_outputs': matrix_outputs,
+                'initialized': initialized,
+                'started': started,
+            }})
+        elif msg['type'] == 'stop':
+            try:
+                processor_instance.stop()
+            finally:
+                return
 
-    # Starts the processor
-    processor_instance.start(
-        start_time=next_output_time,
-        **start_params
-    )
+    try:
+        # Calls the processors start function if present
+        if hasattr(processor_instance, 'start'):
+            processor_instance.start(
+                start_time=next_output_time,
+                **start_params
+            )
+    except TypeError as e:
+        connection.send({'type': 'error', 'value': e})
+        return
+    except ValueError as e:
+        connection.send({'type': 'error', 'value': e})
+        return
 
     # Use a custom time for results if the processor defines it
     if hasattr(processor_instance, "get_time"):
@@ -135,15 +156,21 @@ def processor_process(
     else:
         processor_custom_time = False
 
-    # Initializes kafka
-    consumer = kafka.KafkaConsumer(
-        source_topic,
-        bootstrap_servers=kafka_server
-    )
-    producer = kafka.KafkaProducer(
-        value_serializer=bytes,
-        bootstrap_servers=kafka_server
-    )
+    try:
+        # Initializes kafka
+        consumer = kafka.KafkaConsumer(
+            source_topic,
+            bootstrap_servers=kafka_server
+        )
+        producer = kafka.KafkaProducer(
+            value_serializer=bytes,
+            bootstrap_servers=kafka_server
+        )
+    except:
+        connection.send({'type': 'error', 'value': 'Kafka error'})
+        return
+
+    started = True
 
     while True:
         try:
@@ -159,9 +186,16 @@ def processor_process(
                     try:
                         processor_instance.stop()
                     finally:
-                        connection.send({'type': 'stop'})
                         return
-                # if conn_msg['type'] == 'reload': importlib.reload
+                elif conn_msg['type'] == 'status':
+                    connection.send({'type': 'status', 'value': {
+                        'outputs': outputs,
+                        'inputs': inputs,
+                        # Add a helper attribute that lists outputs that are part of a matrix
+                        'matrix_outputs': matrix_outputs,
+                        'initialized': initialized,
+                        'started': started,
+                    }})
 
             messages = consumer.poll(10)
             for msg in messages.get(topic_partition, []):
@@ -171,25 +205,31 @@ def processor_process(
                     if start_time < 0:
                         start_time = current_time
                     if next_input_time <= current_time or math.isclose(next_input_time, current_time, rel_tol=1e-15):
-                        measurements = [data[ref + 1] * measurement_proportions[i] for i, ref in
-                                        enumerate(measurement_refs)]
+                        # Retrieve measurements from data where ref is positive and use a constant where ref is negative
+                        measurements = [
+                            (data[ref + 1] if ref >= 0 else 1) * measurement_proportions[i]
+                            for i, ref in enumerate(measurement_refs)
+                        ]
                         processor_instance.set_inputs(input_refs, measurements)
                         next_input_time = current_time + min_input_spacing
                     if next_step_time <= current_time or math.isclose(next_step_time, current_time, rel_tol=1e-15):
                         processor_instance.step(current_time - start_time)
-                        next_input_time = current_time + min_step_spacing
+                        next_step_time = current_time + min_step_spacing
                     if next_output_time <= current_time or math.isclose(next_output_time, current_time, rel_tol=1e-15):
                         outputs = processor_instance.get_outputs(output_refs)
+                        if outputs is None:
+                            continue
                         if processor_custom_time:
                             current_time = processor_instance.get_time() + start_time
                         output_buffer += struct.pack(byte_format, current_time, *outputs)
-                        if len(output_buffer) > 80 * len(output_refs):
+                        if len(output_buffer) > 100 * len(output_refs):
                             producer.send(topic=topic, value=output_buffer)
                             output_buffer = bytearray()
                         next_output_time = current_time + min_output_spacing
         except Exception as e:
             logger.exception(f'Exception in processor {processor_dir}')
             connection.send({'type': 'error', 'value': e})
+            return
 
 
 @dataclass
@@ -276,42 +316,6 @@ class Processor:
         self.process = multiprocessing.Process(target=processor_process, kwargs=kwargs)
         self.process.start()
 
-    def retrieve_init_results(self):
-        """
-        Waits for and returns the results from the process initalization
-
-        Can only be called once after initialization.
-        Should be run in a separate thread to prevent the connection from blocking the main thread
-        :return: the processors status as a dict
-        """
-        try:
-            # Blocks the current thread until results are received
-            result = self.connection.recv()
-        except EOFError:
-            result = {'type': 'error', 'value': 'The processor crashed on initialization'}
-        except Exception as e:
-            result = {'type': 'error', 'value': 'Unable to process initialization data from processor'}
-        if result['type'] == 'error':
-            return {
-                'url': '/processors/' + self.processor_id,
-                'error': str(result['value'])
-            }
-        elif result['type'] == 'initialized':
-            self.outputs = result['value']['outputs']
-            self.matrix_outputs = result['value']['matrix_outputs']
-            self.inputs = result['value']['inputs']
-            self.initialized = True
-            return {
-                'url': '/processors/' + self.processor_id,
-                'input_names': [i.name for i in self.inputs],
-                'output_names': [self.outputs[ref].name for ref in self.output_refs],
-                'matrix_outputs': self.matrix_outputs,
-                'available_output_names': [o.name for o in self.outputs],
-                'byte_format': self.byte_format,
-                'started': self.started,
-                'initialized': self.initialized,
-            }
-
     def start(self, input_refs, measurement_refs, measurement_proportions, output_refs, start_params):
         """
         Starts the process, must not be called before init_results
@@ -342,17 +346,46 @@ class Processor:
                 'measurement_proportions': self.measurement_proportions,
             }
         })
-        self.started = True
-        return {
-            'url': '/processors/' + self.processor_id,
-            'input_names': [i.name for i in self.inputs],
-            'output_names': [self.outputs[ref].name for ref in self.output_refs],
-            'matrix_outputs': self.matrix_outputs,
-            'available_output_names': [o.name for o in self.outputs],
-            'byte_format': self.byte_format,
-            'started': self.started,
-            'initialized': self.initialized,
-        }
+
+    def retrieve_status(self):
+        """
+        Retrieves the status of the processor process
+
+        Can only be called after initialization.
+        Should be run in a separate thread to prevent the connection from blocking the main thread
+        :return: the processors status as a dict
+        """
+        try:
+            try:
+                self.connection.send({'type': 'status'})
+            finally:
+                # Blocks the current thread until results are received
+                result = self.connection.recv()
+        except EOFError:
+            result = {'type': 'error', 'value': 'The processor has crashed'}
+        except Exception as e:
+            result = {'type': 'error', 'value': 'Unable to get processor data (has probably crashed)'}
+        if result['type'] == 'error':
+            return {
+                'url': '/processors/' + self.processor_id,
+                'error': str(result['value'])
+            }
+        elif result['type'] == 'status':
+            self.outputs = result['value']['outputs']
+            self.matrix_outputs = result['value']['matrix_outputs']
+            self.inputs = result['value']['inputs']
+            self.initialized = result['value']['initialized']
+            self.started = result['value']['started']
+            return {
+                'url': '/processors/' + self.processor_id,
+                'input_names': [i.name for i in self.inputs],
+                'output_names': [self.outputs[ref].name for ref in self.output_refs],
+                'matrix_outputs': self.matrix_outputs,
+                'available_output_names': [o.name for o in self.outputs],
+                'byte_format': self.byte_format,
+                'started': self.started,
+                'initialized': self.initialized,
+            }
 
     def set_inputs(self, input_refs, measurement_refs, measurement_proportions):
         """
