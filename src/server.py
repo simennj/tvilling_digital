@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 async def start_background_tasks(app):
+    """A method to be called on startup, initiates the Kafka and UDP connections"""
     loop = asyncio.get_event_loop()
     app['kafka'] = loop.create_task(consume_from_kafka(app))
     app['udp_transport'], app['datasources'] = await loop.create_datagram_endpoint(
@@ -32,6 +33,7 @@ async def start_background_tasks(app):
 
 
 async def cleanup_background_tasks(app):
+    """A method to be called on shutdown, closes the WebSocket, Kafka, and UDP connections"""
     for client in app['clients'].values():
         await client.close()
     for simulation in app['simulations'].values():
@@ -42,6 +44,7 @@ async def cleanup_background_tasks(app):
 
 
 def init_app(settings) -> web.Application:
+    """Initializes and starts the server"""
     app = web.Application()
     app['settings'] = settings
     aiohttp_session.setup(app, EncryptedCookieStorage(settings.SECRET_KEY))

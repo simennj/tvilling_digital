@@ -260,8 +260,10 @@ async def processor_stop(request: web.Request):
     processor_id = request.match_info['id']
     if processor_id not in request.app['processors']:
         raise web.HTTPUnprocessableEntity(text=f'Running processor with id {processor_id} could not be found')
+    topic = request.app['processors'][processor_id].topic
     await request.app['processors'][processor_id].stop()
-    del request.app['topics'][request.app['processors'][processor_id].topic]
+    if topic in request.app['topics']:
+        del request.app['topics'][topic]
     del request.app['processors'][processor_id]
     raise web.HTTPOk()
 

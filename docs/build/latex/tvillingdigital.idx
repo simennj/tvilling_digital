@@ -68,20 +68,32 @@
 \indexentry{src.kafka (module)@\spxentry{src.kafka}\spxextra{module}|hyperpage}{10}
 \indexentry{consume\_from\_kafka() (in module src.kafka)@\spxentry{consume\_from\_kafka()}\spxextra{in module src.kafka}|hyperpage}{10}
 \indexentry{src.server (module)@\spxentry{src.server}\spxextra{module}|hyperpage}{11}
+\indexentry{cleanup\_background\_tasks() (in module src.server)@\spxentry{cleanup\_background\_tasks()}\spxextra{in module src.server}|hyperpage}{11}
+\indexentry{init\_app() (in module src.server)@\spxentry{init\_app()}\spxextra{in module src.server}|hyperpage}{11}
+\indexentry{start\_background\_tasks() (in module src.server)@\spxentry{start\_background\_tasks()}\spxextra{in module src.server}|hyperpage}{11}
 \indexentry{src.utils (module)@\spxentry{src.utils}\spxextra{module}|hyperpage}{11}
 \indexentry{RouteTableDefDocs (class in src.utils)@\spxentry{RouteTableDefDocs}\spxextra{class in src.utils}|hyperpage}{11}
+\indexentry{get\_docs\_response() (src.utils.RouteTableDefDocs static method)@\spxentry{get\_docs\_response()}\spxextra{src.utils.RouteTableDefDocs static method}|hyperpage}{11}
+\indexentry{route() (src.utils.RouteTableDefDocs method)@\spxentry{route()}\spxextra{src.utils.RouteTableDefDocs method}|hyperpage}{11}
 \indexentry{dumps() (in module src.utils)@\spxentry{dumps()}\spxextra{in module src.utils}|hyperpage}{11}
-\indexentry{src.views (module)@\spxentry{src.views}\spxextra{module}|hyperpage}{11}
-\indexentry{history() (in module src.views)@\spxentry{history()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{index() (in module src.views)@\spxentry{index()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{models() (in module src.views)@\spxentry{models()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{session\_endpoint() (in module src.views)@\spxentry{session\_endpoint()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{subscribe() (in module src.views)@\spxentry{subscribe()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{topics() (in module src.views)@\spxentry{topics()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{topics\_detail() (in module src.views)@\spxentry{topics\_detail()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{unsubscribe() (in module src.views)@\spxentry{unsubscribe()}\spxextra{in module src.views}|hyperpage}{11}
-\indexentry{src (module)@\spxentry{src}\spxextra{module}|hyperpage}{12}
-\indexentry{files.blueprints.fmu (module)@\spxentry{files.blueprints.fmu}\spxextra{module}|hyperpage}{13}
-\indexentry{P (class in files.blueprints.fmu)@\spxentry{P}\spxextra{class in files.blueprints.fmu}|hyperpage}{13}
-\indexentry{start() (files.blueprints.fmu.P method)@\spxentry{start()}\spxextra{files.blueprints.fmu.P method}|hyperpage}{13}
-\indexentry{prepare\_outputs() (in module files.blueprints.fmu)@\spxentry{prepare\_outputs()}\spxextra{in module files.blueprints.fmu}|hyperpage}{13}
+\indexentry{find\_in\_dir() (in module src.utils)@\spxentry{find\_in\_dir()}\spxextra{in module src.utils}|hyperpage}{11}
+\indexentry{get\_client() (in module src.utils)@\spxentry{get\_client()}\spxextra{in module src.utils}|hyperpage}{11}
+\indexentry{make\_serializable() (in module src.utils)@\spxentry{make\_serializable()}\spxextra{in module src.utils}|hyperpage}{11}
+\indexentry{try\_get() (in module src.utils)@\spxentry{try\_get()}\spxextra{in module src.utils}|hyperpage}{11}
+\indexentry{try\_get\_all() (in module src.utils)@\spxentry{try\_get\_all()}\spxextra{in module src.utils}|hyperpage}{11}
+\indexentry{try\_get\_topic() (in module src.utils)@\spxentry{try\_get\_topic()}\spxextra{in module src.utils}|hyperpage}{12}
+\indexentry{try\_get\_validate() (in module src.utils)@\spxentry{try\_get\_validate()}\spxextra{in module src.utils}|hyperpage}{12}
+\indexentry{src.views (module)@\spxentry{src.views}\spxextra{module}|hyperpage}{12}
+\indexentry{history() (in module src.views)@\spxentry{history()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{index() (in module src.views)@\spxentry{index()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{models() (in module src.views)@\spxentry{models()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{session\_endpoint() (in module src.views)@\spxentry{session\_endpoint()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{subscribe() (in module src.views)@\spxentry{subscribe()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{topics() (in module src.views)@\spxentry{topics()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{topics\_detail() (in module src.views)@\spxentry{topics\_detail()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{unsubscribe() (in module src.views)@\spxentry{unsubscribe()}\spxextra{in module src.views}|hyperpage}{12}
+\indexentry{src (module)@\spxentry{src}\spxextra{module}|hyperpage}{13}
+\indexentry{files.blueprints.fmu (module)@\spxentry{files.blueprints.fmu}\spxextra{module}|hyperpage}{15}
+\indexentry{P (class in files.blueprints.fmu)@\spxentry{P}\spxextra{class in files.blueprints.fmu}|hyperpage}{15}
+\indexentry{start() (files.blueprints.fmu.P method)@\spxentry{start()}\spxextra{files.blueprints.fmu.P method}|hyperpage}{15}
+\indexentry{prepare\_outputs() (in module files.blueprints.fmu)@\spxentry{prepare\_outputs()}\spxextra{in module files.blueprints.fmu}|hyperpage}{15}

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 async def consume_from_kafka(app: web.Application):
-    """asdf"""
+    """The function responsible for delivering data to the connected clients."""
     consumer = aiokafka.AIOKafkaConsumer(
         loop=asyncio.get_event_loop(),
         bootstrap_servers=app['settings'].KAFKA_SERVER

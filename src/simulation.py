@@ -1,4 +1,4 @@
-# TODO: delete
+# TODO: No longer in use
 import logging
 import operator
 import os

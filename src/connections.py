@@ -1,4 +1,4 @@
-# TODO: delete
+# TODO: No longer in use
 import asyncio
 import datetime
 import json
